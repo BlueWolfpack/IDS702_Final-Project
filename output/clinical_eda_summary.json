@@ -1,0 +1,64 @@
+{
+  "rows": 18583,
+  "columns": 36,
+  "unique_sponsor_names": 4790,
+  "enrollment_summary": {
+    "count": 18583.0,
+    "mean": 416.1679492008825,
+    "std": 6093.736209370178,
+    "min": 1.0,
+    "25%": 40.0,
+    "50%": 100.0,
+    "75%": 260.0,
+    "95%": 974.0,
+    "99%": 3396.980000000003,
+    "max": 500000.0
+  },
+  "group_summary": [
+    {
+      "phase_group": "PHASE2",
+      "sponsor_group": "INDUSTRY",
+      "n": 5175,
+      "median": 87.0,
+      "q1": 40.0,
+      "q3": 180.0,
+      "mean": 146.14628019323672,
+      "minimum": 1,
+      "maximum": 4748
+    },
+    {
+      "phase_group": "PHASE2",
+      "sponsor_group": "NONINDUSTRY",
+      "n": 5818,
+      "median": 44.5,
+      "q1": 23.0,
+      "q3": 89.0,
+      "mean": 87.1866620831901,
+      "minimum": 1,
+      "maximum": 12551
+    },
+    {
+      "phase_group": "PHASE3",
+      "sponsor_group": "INDUSTRY",
+      "n": 5086,
+      "median": 322.0,
+      "q1": 150.0,
+      "q3": 598.0,
+      "mean": 695.3564687377113,
+      "minimum": 1,
+      "maximum": 45789
+    },
+    {
+      "phase_group": "PHASE3",
+      "sponsor_group": "NONINDUSTRY",
+      "n": 2504,
+      "median": 120.0,
+      "q1": 57.0,
+      "q3": 306.25,
+      "mean": 1171.528354632588,
+      "minimum": 1,
+      "maximum": 500000
+    }
+  ],
+  "models_fitted": false
+}
