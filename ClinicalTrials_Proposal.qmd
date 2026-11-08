@@ -1,0 +1,226 @@
+---
+title: "Clinical-Trial Enrollment: Development Phase and Sponsor Type"
+author: "Haoran Wang"
+date: "2026-11-08"
+format:
+  html:
+    embed-resources: true
+  pdf:
+    fontsize: 10pt
+    geometry: margin=0.8in
+execute:
+  echo: false
+  message: false
+  warning: false
+---
+
+## Dataset Option 1: ClinicalTrials.gov
+
+**Status:** Proposal draft for team review. This supplies the clinical-trials option alongside the team's existing Freddie Mac option. The EDA below is descriptive; no model or hypothesis test has been fitted.
+
+**Project title:** Clinical-Trial Enrollment: Associations with Development Phase and Lead-Sponsor Type.
+
+**Team repository:** <https://github.com/BlueWolfpack/IDS702_Final-Project>.
+
+**Dataset folder:** <https://drive.google.com/drive/folders/1Zk7kmZaLdCKmmyyWo13c-JfCUxXnursR>.
+
+**Data citation:** U.S. National Library of Medicine. (2026). *ClinicalTrials.gov* [Registry data; API v2 extract retrieved November 8, 2026]. <https://clinicaltrials.gov/data-api/api>.
+
+**Original collection / publication date:** This is a continuously updated registry, not a one-time survey. The frozen extract has registry data timestamp `2026-11-06T10:00:05`, reported by API v2.0.5. The scope is recorded study starts in 2015-2024; this is not the date range of all registry updates or completions.
+
+**Pull date:** November 8, 2026 (UTC). The source is the official ClinicalTrials.gov API, **not an AACT database snapshot**. AACT is a related relational representation of registry records; exact AACT schema or version parity is not asserted. See <https://aact.ctti-clinicaltrials.org/landing> for background.
+
+### 1. Research questions
+
+Trial enrollment measures study scale. Research administrators and trial planners may benefit from understanding how the distribution of trial size differs by phase and sponsor type. Enrollment is not a measure of drug quality, efficacy success, or participant-level benefit.
+
+1. Among eligible completed Phase 2 and Phase 3 drug or biological trials starting in 2015-2024, is development phase associated with actual enrollment after accounting for lead-sponsor type and start year?
+2. Does the Phase 3 versus Phase 2 association differ between industry and nonindustry lead sponsors, after accounting for start year?
+
+The second question concerns effect modification in an observational model, not a causal effect of changing a trial's sponsor.
+
+### 2. Study population and observation unit
+
+Each observation is one registered trial with a unique NCT ID, not one participant, sponsor, company, or company-week. The API query selected completed interventional trials starting in 2015-2024 whose phases include Phase 2 or 3 and which have a drug or biological intervention. It returned **22,669 unique trials** in 23 selected-field response pages. Records are global; there is no U.S.-only or disease-specific restriction.
+
+The provisional analysis table contains **18,583 trials and 36 columns**. Eligibility requires one exact recorded phase (Phase 2 or Phase 3), positive actual enrollment, a known mapped lead-sponsor class, and a nonblank lead-sponsor name. Combined Phase 1/2 and Phase 2/3 trials remain in the full extract but are excluded from this comparison. Completed status does not establish treatment success.
+
+The target of interpretation is this selected registry cohort and comparable completed registered trials, subject to model assumptions. This is not a probability sample of all clinical trials. Recent start cohorts have had less time to complete and enter this sample. These records reflect information reported by download time, not what was public at each historical date.
+
+### 3. Outcomes, exposures, and additional variables
+
+#### 3.1 Primary outcome
+
+| Variable | Description | Coding / analysis |
+|:--|:--|:--|
+| `enrollment_count` | Reported actual enrollment | Positive integer; natural logarithm in the primary model |
+| `enrollment_type` | Enrollment status | `ACTUAL` required; estimated or missing enrollment excluded |
+
+#### 3.2 Primary independent variables
+
+| Variable | Description | Coding / reference |
+|:--|:--|:--|
+| `phase_group` | Exact recorded development phase | `PHASE2` reference; `PHASE3` indicator $P$ |
+| `sponsor_group` | Recorded lead-sponsor type | `NONINDUSTRY` reference; `INDUSTRY` indicator $I$ |
+| Phase-by-sponsor interaction | Whether the phase association differs by sponsor group | $P\times I$ |
+
+`INDUSTRY` maps to industry; `NIH`, `FED`, `OTHER_GOV`, `NETWORK`, `OTHER`, and `INDIV` map to nonindustry. Unknown or unmapped sponsor classes remain missing. Lead sponsor is not the same as all funding sources; nonindustry is a heterogeneous category.
+
+#### 3.3 Additional variables
+
+| Variable | Role | Specification |
+|:--|:--|:--|
+| `start_year` | Adjustment variable | Categorical 2015-2024; 2015 reference |
+| `lead_sponsor_name` | Clustering identifier | Recorded name; audit aliases and group sizes |
+| `nct_id` | Unique trial key | Deduplication and record checks; not a predictor |
+| `allocation`, `masking` | Supplementary design descriptions | Preserve source categories and missing values |
+| `has_drug_intervention`, `has_biological_intervention` | Intervention descriptors | Flags can both be true |
+
+### 4. Statistical analysis plan
+
+#### 4.1 Cleaning and exploratory analysis
+
+Keep the frozen full extract, candidate table, dictionary, audit, raw selected-field responses, and source manifest. Confirm trial uniqueness, eligibility, coding, positive enrollment, and start years. The 4,086 exclusions have overlapping reasons: combined phases (4,015), enrollment not actual (88), enrollment missing (3), and unknown/unmapped sponsor class (5). Do not sum these reasons to derive the excluded total.
+
+Preserve partial dates without inventing days. Blank CSV cells denote missingness; the source allocation category `NA` means not applicable. JSON arrays remain within cells so that multiple conditions or interventions do not duplicate trials. Do not automatically remove outliers, winsorize enrollment, or impute numerical values. Check the largest reported enrollments against registry records; document any confirmed errors and corrections. Do not change valid extreme values merely because they are influential.
+
+EDA will report dimensions, types, missingness, phase/sponsor/year group sizes, enrollment median and interquartile range, mean and range, a log-scale histogram, and enrollment distributions by phase and sponsor. Examine sponsor cluster sizes and sparse phase-by-sponsor-by-year cells before inference. Supplementary design-variable missingness will be reported separately; if these variables enter a sensitivity model, state its complete-case sample explicitly.
+
+#### 4.2 Model and definitions
+
+For trial $i$, let $Y_i$ be positive actual enrollment, $P_i$ indicate Phase 3, $I_i$ indicate industry lead sponsor, and $S_i$ be start year. The proposed primary model is ordinary least squares on log enrollment:
+
+$$
+\log(Y_i) = \beta_0 + \beta_P P_i + \beta_I I_i
+  + \beta_{PI}P_i I_i
+  + \sum_{y=2016}^{2024}\gamma_y\mathbf{1}(S_i=y)
+  + \varepsilon_i.
+$$
+
+$\beta_0$ describes the reference group, Phase 2/nonindustry/2015. $\beta_P$ is the log phase contrast for nonindustry, $\beta_I$ the log sponsor contrast for Phase 2, and $\beta_{PI}$ the difference between phase contrasts. The year indicators allow flexible start-cohort differences. Residuals are $\varepsilon_i$.
+
+Use sponsor-clustered robust standard errors after auditing recorded sponsor names and cluster-size concentration. There are 4,790 distinct sponsor-name strings in the current candidate table; these are not necessarily 4,790 fully independent organizations.
+
+For **RQ1**, jointly test $H_0:\beta_P=\beta_{PI}=0$. Report Phase 3/Phase 2 geometric-mean ratios $\exp(\beta_P)$ for nonindustry and $\exp(\beta_P+\beta_{PI})$ for industry, with 95% confidence intervals. For **RQ2**, test $H_0:\beta_{PI}=0$ and report $\exp(\beta_{PI})$, the ratio of the two phase ratios. Use two-sided tests and Holm adjustment across the two planned question-level tests. Interpret effect sizes and intervals rather than p-values alone.
+
+#### 4.3 Rationale and assumptions
+
+Enrollment is a count with a very broad range. Log enrollment provides a transparent model for proportional differences and reduces scale-related influence, but its adequacy must be assessed. Exponentiated coefficients target conditional **geometric-mean ratios**, not arithmetic-mean or median ratios. Assumptions include a sufficiently specified conditional mean on the log scale, nondegenerate covariates, adequate group support, and sufficiently independent sponsor clusters. Normality or homoskedasticity of raw enrollment is not required by this specification.
+
+Cluster-robust uncertainty accommodates within-sponsor dependence and heteroskedasticity under its assumptions. It cannot repair a misspecified mean, inaccurate sponsor mappings, unmeasured disease/design differences, or selected registry coverage. Year adjustment does not eliminate completion-selection bias. Inference remains model-based because the cohort is not a probability sample.
+
+#### 4.4 Model assessment and sensitivity analyses
+
+Inspect residual-versus-fitted and residual-distribution plots, group-specific residual spread, leverage, Cook's distance, cluster sizes, and phase/sponsor/year cells. Do not choose a model according to which specification yields a smaller p-value.
+
+Prespecify a negative-binomial log-link model with the same predictors as a sensitivity analysis for overdispersed counts, using sponsor-robust uncertainty where supported. It targets arithmetic conditional mean ratios, so numerical equality with the primary model is not expected. Also repeat the log model excluding the largest 1% of enrollments as a labeled sensitivity analysis; retain those trials in the primary analysis. If a count model fails to converge, report the failure rather than force an interpretation.
+
+The project emphasizes inference, not stock prediction or neural-network performance. No treatment recommendation or causal effect will be inferred. Disease, geography, study purpose, and design may account for observed associations; a coarse adjustment set cannot resolve all heterogeneity.
+
+\newpage
+
+### Preliminary exploratory data analysis
+
+The following code reproduces the descriptive tables and plots from the frozen candidate CSV. Download the files from Drive into `data/clinical_trials/`, or set the `CLINICAL_DATA_DIR` environment variable. `read.csv(..., na.strings="")` deliberately preserves the source category `NA`.
+
+```{r}
+#| label: clinical-data-audit
+#| include: false
+data_dir <- Sys.getenv("CLINICAL_DATA_DIR", unset = "data/clinical_trials")
+csv_path <- file.path(data_dir, "trials_analysis_candidate.csv")
+if (!file.exists(csv_path)) stop("Download the frozen CSV from the linked Drive folder into data/clinical_trials/ or set CLINICAL_DATA_DIR.")
+trials <- read.csv(csv_path, na.strings = "", stringsAsFactors = FALSE,
+                   check.names = FALSE)
+stopifnot(nrow(trials) == 18583L, ncol(trials) == 36L,
+          !anyDuplicated(trials$nct_id),
+          all(trials$enrollment_count > 0),
+          all(trials$enrollment_type == "ACTUAL"),
+          all(trials$phase_group %in% c("PHASE2", "PHASE3")),
+          all(trials$sponsor_group %in% c("INDUSTRY", "NONINDUSTRY")),
+          all(trials$start_year %in% 2015:2024))
+trials$phase_group <- factor(trials$phase_group, levels=c("PHASE2","PHASE3"))
+trials$sponsor_group <- factor(trials$sponsor_group, levels=c("NONINDUSTRY","INDUSTRY"))
+groups <- interaction(trials$sponsor_group, trials$phase_group, sep=" / ")
+```
+
+#### Data snapshot and Table 1
+
+The candidate table has 18,583 unique trials and 36 columns. Enrollment, phase, sponsor group, and start year are complete **by the eligibility rules**; this does not imply that the original registry has no missingness. In the candidate table, 1,365 records lack a start-date type and 15 lack a completion date. Neither field is needed for this enrollment model.
+
+```{r}
+#| label: clinical-variable-snapshot
+selected <- c("nct_id", "enrollment_count", "phase_group", "sponsor_group",
+              "start_year", "lead_sponsor_name", "allocation", "masking")
+snapshot <- data.frame(
+  Variable=selected,
+  Type=sapply(trials[selected], function(x) class(x)[1]),
+  Missing=sapply(trials[selected], function(x) sum(is.na(x))),
+  row.names=NULL)
+knitr::kable(snapshot, caption="Selected variable types and missingness in the candidate table.")
+```
+
+```{r}
+#| label: clinical-enrollment-summary
+y <- trials$enrollment_count
+tab1 <- data.frame(Characteristic=c("Trials", "Median", "25th percentile", "75th percentile", "Mean", "Minimum", "Maximum"),
+                   Value=c(length(y), median(y), quantile(y,.25), quantile(y,.75), mean(y), min(y), max(y)))
+knitr::kable(tab1, digits=1, caption="Actual enrollment summary (participants per trial).")
+```
+
+```{r}
+#| label: fig-clinical-enrollment
+#| fig-cap: "Actual enrollment on a log10 scale. All eligible trials are retained."
+#| fig-width: 6.5
+#| fig-height: 3
+hist(log10(y), breaks=seq(0,6,by=.2), col="#184B70", border="white",
+     main="", xlab="log10(actual enrollment)", ylab="Number of trials")
+```
+
+Median enrollment is 100 (IQR 40-260), compared with a mean of 416.2 and a maximum of 500,000. The upper tail motivates a log-scale primary analysis and influence diagnostics. NCT05148845 (500,000) and NCT04838795 (477,102) are the two largest reported enrollments; final cleaning should verify their records rather than automatically exclude them.
+
+\newpage
+
+#### Table 2 and group distributions
+
+```{r}
+#| label: clinical-group-summary
+split_y <- split(y, groups)
+tab2 <- do.call(rbind, lapply(names(split_y), function(g) {
+  z <- split_y[[g]]
+  data.frame(Group=g, Trials=length(z), Median=median(z), Mean=mean(z))
+}))
+row.names(tab2) <- NULL
+knitr::kable(tab2, digits=1, caption="Enrollment by phase and lead-sponsor type; unadjusted.")
+```
+
+```{r}
+#| label: fig-clinical-groups
+#| fig-cap: "Enrollment by phase and sponsor. Boxes show quartiles, central lines medians, and whiskers the full observed range (not the conventional 1.5-IQR rule)."
+#| fig-width: 6.5
+#| fig-height: 3.4
+boxplot(y ~ groups, log="y", range=0,
+        names=c("Nonindustry\nPhase 2", "Industry\nPhase 2", "Nonindustry\nPhase 3", "Industry\nPhase 3"),
+        col=c("#D5E4EF","#C8E9E6","#D5E4EF","#C8E9E6"),
+        xlab="", ylab="Actual enrollment (log scale)")
+```
+
+Phase 2 medians are 44.5 for nonindustry and 87 for industry trials; Phase 3 medians are 120 and 322, respectively. Phase 3 nonindustry trials have a particularly large mean (1,171.5) relative to their median because of the upper tail. These descriptive summaries motivate the interaction and robustness checks. They do not demonstrate an adjusted association or significance.
+
+As supplementary EDA, tabulate start-year counts and sponsor cluster sizes before modeling. The decline in completed-trial counts for recent start years must not be interpreted as a decline in all trial activity without considering completion selection.
+
+### Deliverables and remaining decisions
+
+The final deliverables will be a 5-7 page written analysis rendered from a QMD with hidden code, formatted tables and figures, and a 2-3 page data science memo for research administrators and trial-planning stakeholders. The memo will summarize adjusted associations and their limitations; it will not prescribe a required trial size.
+
+Next steps are to agree on the dataset option, audit extreme values and sponsor identities, execute the prespecified model and sensitivity checks, and write the results. Team meeting schedules, communication channels, and response-time policies still need team agreement. This proposal does not claim those policies have been accepted.
+
+### Reproducibility
+
+This document uses base R and `knitr`, plus Quarto and a working PDF/LaTeX setup for PDF rendering. From the repository root, after downloading the candidate CSV:
+
+```{.bash}
+quarto render ClinicalTrials_Proposal.qmd --to html
+quarto render ClinicalTrials_Proposal.qmd --to pdf
+```
+
+The accompanying PDF and machine-readable EDA summaries were independently generated from the same frozen CSV with `prepare_clinical_proposal.py`. The R QMD has been written for rerunning in the team's R/Quarto environment; it has not been executed on this machine, which currently lacks R and Quarto. The rendered PDF contains verified descriptive results, not fitted-model output.
