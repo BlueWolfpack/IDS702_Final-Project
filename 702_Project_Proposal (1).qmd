@@ -327,11 +327,11 @@ Definition of terms:
 
 - $Y_i$: Binary outcome indicating whether loan $i$ experiences 90 or more days delinquent within its first 12 months (1 = yes, 0 = no).
 
-- $P(Y_i=1)$: Probability that loan \$i\$ experiences early delinquency.
+- $P(Y_i=1)$: Probability that loan $i$ experiences early delinquency.
 
 - $\beta_0$: Model intercept.
 
-- $\beta_1$: Average borrower's credit score at loan origination.
+- $\beta_1$:
 
 - $\beta_2$:
 
