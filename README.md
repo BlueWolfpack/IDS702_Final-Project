@@ -2,13 +2,16 @@
 This repository is for the stats group project 
 
 
-## Data Access
+## Data Access (Dataset Option 2)
 
 The Freddie Mac loan-level dataset used in this project is available through Google Drive:
 
 [Access the dataset](https://drive.google.com/drive/folders/1wcYV5-2_TSR5FxkU4TL7xdaeFkxauKCt?usp=drive_link)
 
-The folder contains the origination and monthly performance files for the 2022–2024 cohorts. Download the required files before running the analysis.
+Due to the large size of the dataset, the files could not be uploaded directly to GitHub. Instead, they are provided through the Google Drive link above. The folder contains the origination and monthly performance files for the 2022–2024 cohorts.
+
+Download the required files and place them in the appropriate project directory before running the code. The provided scripts can then be used to read the data and perform exploratory data analysis (EDA).
+- Read the mortgage loan proposal (pdf) 
 
 ## Clinical-trials alternative (Dataset Option 1)
 
