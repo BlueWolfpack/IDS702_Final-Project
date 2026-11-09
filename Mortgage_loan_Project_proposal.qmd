@@ -1,0 +1,328 @@
+---
+title: "IDS 702 Project Proposal"
+author: "Masoma Shoayb, Laura Perkins, Haoran Wang"
+format: pdf
+editor: visual
+execute:
+  echo: FALSE
+  message: FALSE
+  warning: FALSE
+---
+
+## Project Proposal/Statistical Analysis Plan
+
+Link to your team's Github Repo:
+
+### Dataset Option 1
+
+------------------------------------------------------------------------
+
+Project Title:
+
+Data citation (use APA formatting or something similar):
+
+Original data collection date (when was the dataset published?):
+
+Data pull date (when did you download the data you will use?):
+
+------------------------------------------------------------------------
+
+#### 1 Research Question
+
+*Write the research question you are interested in investigating in your analysis. Consult [this helpful guide](https://writingcenter.gmu.edu/writing-resources/research-based-writing/how-to-write-a-research-question) for writing a good research question. Go beyond "is there a relationship between X and Y" to incorporate some statistical complexity, e.g., "is there a relationship between X and Y and does this relationship change over time?" You may also want to provide a second RQ as a backup and I can provide feedback on both options. Remember that you are required to use an inferential research question.*
+
+#### 2 Study Population
+
+Describe the observation units and how the data were collected.
+
+#### 3 Outcomes, Exposures, and Additional Variables of Interest
+
+*Add rows as necessary. Use the data dictionary for the coding specifications, e.g., 1=Diagnosed with CHD, 0=No diagnosis*
+
+3.1 Primary Outcome(s)
+
+| Variable Name | Description | Coding specification |
+|---------------|-------------|----------------------|
+|               |             |                      |
+
+3.2 Primary Independent Variable(s)
+
+| Variable Name | Description | Coding specification |
+|---------------|-------------|----------------------|
+|               |             |                      |
+
+3.3 Additional Variables of Interest (including potential confounders)
+
+| Variable Name | Description | Coding specification |
+|---------------|-------------|----------------------|
+|               |             |                      |
+
+#### 4 Statistical Analysis Plan
+
+4.1 Exploratory Data Analysis
+
+*Detail how you will investigate the data, including basic characteristics of the outcome and independent variable(s) of interest (e.g., "The outcome is continuous, so we will generate a histogram of the outcome. Then, we will generate a stacked histogram/scatter plot to explore the relationship between the outcome and the independent variable")*
+
+4.2 Statistical Model (write in mathematical notation and define each term)
+
+4.2 Rationale for the statistical model (why are you choosing to use this type of model? What about your data structure/characteristics are you accommodating with this model type?)
+
+4.3 Model Assumptions
+
+4.4 Model Assessment (how will you assess the assumptions and model performance?)
+
+\newpage
+
+#### Exploratory Data Analysis
+
+*First, provide a snapshot of the data using the glimpse function or something similar. Then, present your EDA according to your SAP above. At minimum, you should present basic characteristics of your outcome alone (descriptive statistics and a plot) and at least one key relationship of interest, but the EDA should not exceed 3 pages. It may be useful to present a "Table 1" that gives descriptive statistics for several variables of interest. You are not required to complete data cleaning for the EDA.*
+
+```{r}
+
+```
+
+\newpage
+
+### Dataset Option 2
+
+------------------------------------------------------------------------
+
+Project Title: From Default Prediction to Expected Credit Loss: Examining Early Mortgage Delinquency and Credit Risk Across 2022–2024 Origination Cohorts
+
+Data citation (use APA formatting or something similar):
+
+Freddie Mac. (n.d.). Single-Family Loan-Level Dataset. Freddie Mac. [https://www.freddiemac.com/research/loanlevel-datasets](https://www.freddiemac.com/research/loanlevel-datasets?utm_source=chatgpt.com)
+
+Original data collection date (when was the dataset published?):
+
+The dataset contains mortgage origination and monthly performance records. The current historical data available on Freddie Mac's website includes performance information through June 30, 2026 (Q2 2026).
+
+Data pull date (when did you download the data you will use?):
+
+November 5, 2026
+
+------------------------------------------------------------------------
+
+#### 1 Research Question
+
+*Write the research question you are interested in investigating in your analysis. Consult [this helpful guide](https://writingcenter.gmu.edu/writing-resources/research-based-writing/how-to-write-a-research-question) for writing a good research question. Go beyond "is there a relationship between X and Y" to incorporate some statistical complexity, e.g., "is there a relationship between X and Y and does this relationship change over time?" You may also want to provide a second RQ as a backup and I can provide feedback on both options. Remember that you are required to use an inferential research question.*
+
+Does a borrower's credit score at mortgage origination have a significant association with the likelihood of experiencing early mortgage delinquency (90 or more days delinquent within the first 12 months), after adjusting for other loan characteristics, and does this association differ across the 2022–2024 origination cohorts?
+
+#### 2 Study Population
+
+Describe the observation units and how the data were collected.
+
+The study population will consist of single-family mortgage loans included in Freddie Mac's historical loan-level dataset, with origination cohorts from 2022 through 2024. The data were collected by Freddie Mac from mortgage loans purchased or guaranteed through its single-family mortgage programs.
+
+The origination files contain loan characteristics recorded at the time of origination, while the performance files contain monthly updates on loan status and payment history. These files will be linked using the loan identifier. Each mortgage loan will represent one observation in the analysis.
+
+Loans will be included only when sufficient performance data are available to determine whether they experienced 90 or more days of delinquency during their first 12 months after origination.
+
+#### 3 Outcomes, Exposures, and Additional Variables of Interest
+
+*Add rows as necessary. Use the data dictionary for the coding specifications, e.g., 1=Diagnosed with CHD, 0=No diagnosis*
+
+3.1 Primary Outcome(s)
+
+| Variable Nam | Description | Coding specification |
+|----|----|----|
+| early_delinquency | Indicates whether a mortgage loan reaches 90 or more days delinquent within its first 12 months after origination. | 1 = Reaches 90 or more days delinquent within the first 12 months; 0 = Does not reach 90 or more days delinquent within the first 12 months. |
+
+3.2 Primary Independent Variable(s)
+
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+
+| Variable Name    | Description                                                                                                                                                          | Coding specification                                    |
++==================+======================================================================================================================================================================+=========================================================+
+| credit_score     | Borrower's credit score recorded at the time the mortgage loan was originated.                                                                                       | Numeric value as recorded in the origination file.      |
+|                  |                                                                                                                                                                      |                                                         |
+| origination_year | Calendar year in which the mortgage loan was originated. Used to examine whether the relationship between credit score and early delinquency differs across cohorts. | 2022, 2023, or 2024; treated as a categorical variable. |
++------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+
+
+3.3 Additional Variables of Interest (including potential confounders)
+
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
+| Variable Name        | Description                                                                                           | Coding specification                                             |
++======================+=======================================================================================================+==================================================================+
+| ltv                  | Loan-to-value ratio at origination, representing the loan amount relative to the property's value.    | Numeric percentage.                                              |
+|                      |                                                                                                       |                                                                  |
+| Dti                  | Debt-to-income ratio at origination, representing the borrower's debt obligations relative to income. | Numeric percentage.                                              |
+|                      |                                                                                                       |                                                                  |
+| interest_rate        | Mortgage interest rate at origination.                                                                | Numeric percentage.                                              |
+|                      |                                                                                                       |                                                                  |
+| original_loan_amount | Initial principal amount of the mortgage loan.                                                        | Numeric value in U.S. dollars.                                   |
+|                      |                                                                                                       |                                                                  |
+| occupancy_status     | Indicates how the borrower intends to use the property.                                               | Categorical; coded according to the Freddie Mac data dictionary. |
+|                      |                                                                                                       |                                                                  |
+| loan_purpose         | Indicates the purpose of the mortgage, such as purchase or refinance.                                 | Categorical; coded according to the Freddie Mac data dictionary. |
+|                      |                                                                                                       |                                                                  |
+| property_type        | Describes the type of property securing the mortgage.                                                 | Categorical; coded according to the Freddie Mac data dictionary. |
++----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
+
+#### 4 Statistical Analysis Plan
+
+4.1 Exploratory Data Analysis
+
+*Detail how you will investigate the data, including basic characteristics of the outcome and independent variable(s) of interest (e.g., "The outcome is continuous, so we will generate a histogram of the outcome. Then, we will generate a stacked histogram/scatter plot to explore the relationship between the outcome and the independent variable")*
+
+The exploratory data analysis (EDA) will begin with an overview of the origination and performance datasets, including their dimensions, variable types, and missing values. Descriptive statistics will be calculated for the main variables of interest.
+
+The distribution of the binary outcome, early delinquency (90 or more days delinquent within the first 12 months), will be examined using counts, percentages, and a bar plot. Credit score, the primary independent variable, will be summarized using descriptive statistics and a histogram. A boxplot will compare credit score distributions between loans with and without early delinquency. Delinquency rates across credit score groups will also be examined.
+
+Additional loan characteristics, including LTV, DTI, interest rate, and original loan amount, will be summarized using descriptive statistics. Their relationships with early delinquency will be explored through appropriate plots and comparisons. Finally, delinquency patterns across the 2022, 2023, and 2024 origination cohorts will be examined to identify potential differences between years.
+
+4.2 Statistical Model (write in mathematical notation and define each term)
+
+4.2 Rationale for the statistical model (why are you choosing to use this type of model? What about your data structure/characteristics are you accommodating with this model type?)
+
+We will use a multivariable logistic regression model to estimate the probability of early mortgage delinquency. The model is:
+
+$$\begin{aligned}
+\operatorname{logit}\left[P(Y_i = 1)\right] ={}& \beta_0 + \beta_1 CS_i + \beta_2 \, \mathbb{1}(Year_i = 2023) + \beta_3 \, \mathbb{1}(Year_i = 2024) \\
+& + \beta_4 \left[CS_i \times \mathbb{1}(Year_i = 2023)\right] + \beta_5 \left[CS_i \times \mathbb{1}(Year_i = 2024)\right] \\
+& + \beta_6 LTV_i + \beta_7 DTI_i + \beta_8 Rate_i + \beta_9 LoanAmount_i \\
+& + \boldsymbol{\gamma}^{\top} \mathbf{X}_i
+\end{aligned}$$
+
+where $\operatorname{logit}(p) = \log\left(\dfrac{p}{1-p}\right)$.
+
+**Definition of terms:**
+
+- $i$: Index for each individual mortgage loan.
+- $Y_i$: Binary outcome indicating whether loan $i$ is 90 or more days delinquent within its first 12 months (1 = yes, 0 = no).
+- $P(Y_i = 1)$: Probability that loan $i$ experiences early delinquency.
+- $\operatorname{logit}(p)$: Log-odds of early delinquency, $\log\left(\frac{p}{1-p}\right)$.
+- $\beta_0$: Model intercept (log-odds for the reference group, 2022, when all other predictors equal zero).
+- $CS_i$: Borrower's credit score at loan origination.
+- $\mathbb{1}(Year_i = 2023)$, $\mathbb{1}(Year_i = 2024)$: Indicator variables for origination year, with 2022 as the reference category.
+- $\beta_2, \beta_3$: Differences in log-odds for the 2023 and 2024 cohorts relative to 2022.
+- $CS_i \times \mathbb{1}(Year_i = \cdot)$: Interaction between credit score and origination year.
+- $\beta_4, \beta_5$: Change in the credit score effect for the 2023 and 2024 cohorts relative to 2022.
+- $LTV_i$: Original loan-to-value ratio.
+- $DTI_i$: Debt-to-income ratio.
+- $Rate_i$: Mortgage interest rate at origination.
+- $LoanAmount_i$: Original loan amount.
+- $\mathbf{X}_i$: Vector of additional categorical loan characteristics (e.g., occupancy status, loan purpose, property type), represented by indicator variables.
+- $\boldsymbol{\gamma}$: Vector of coefficients for the additional categorical predictors.
+- $\beta_1, \beta_6, \dots, \beta_9$: Coefficients for credit score (in the reference year, 2022), LTV, DTI, interest rate, and loan amount.
+
+## 4.2 Rationale for the Statistical Model
+
+Multivariable logistic regression is appropriate because the outcome, early mortgage delinquency, is binary. The model estimates the probability of delinquency from borrower and loan characteristics, including credit score, LTV, DTI, and interest rate.
+
+It allows us to examine multiple predictors simultaneously and to interpret their associations through odds ratios, each adjusted for the other variables in the model. The interaction between credit score and origination year will help determine whether the relationship between credit score and delinquency differs across the 2022--2024 cohorts.
+
+Monthly performance records will be used to construct one outcome per loan, resulting in a loan-level dataset with one row per loan. This structure satisfies the independent-observations assumption of standard logistic regression, so no repeated-measures model is needed.
+
+4.3 Model Assumptions
+
+The multivariable logistic regression model relies on the following assumptions:
+
+1.  **Binary outcome:** The response variable, early delinquency, will be binary, indicating whether a loan reaches 90 or more days delinquent within its first 12 months.
+
+2.  **Independence of observations:** Each loan will contribute one observation to the analysis. Monthly performance records will be used to construct the outcome rather than treated as separate independent observations.
+
+3.  **Linearity in the logit:** Continuous predictors, particularly credit score, are assumed to have a linear relationship with the log-odds of early delinquency. This assumption will be examined during model assessment.
+
+4.  **No severe multicollinearity:** Predictors should not have excessively high correlations with one another. This will be assessed using correlation analysis and Variance Inflation Factors (VIF).
+
+5.  **Adequate sample size:** The dataset should contain sufficient observations and delinquency events relative to the number of model parameters to support reliable estimation.
+
+6.  **Correct model specification:** Relevant predictors and the planned interaction between credit score and origination year should be appropriately included in the model.
+
+7.  **No complete separation:** Predictor combinations should not perfectly distinguish delinquent from non-delinquent loans, as this can lead to unstable or non-finite coefficient estimates.
+
+4.4 Model Assessment (how will you assess the assumptions and model performance?)
+
+The logistic regression model will be assessed by examining its assumptions, goodness of fit, and predictive performance.
+
+**Model assumptions:**
+
+- **Independence of observations:** Each loan will contribute one observation to the analysis dataset, with repeated monthly performance records used to construct the loan-level outcome rather than treated as independent observations.
+- **Linearity in the logit:** The relationship between continuous predictors, particularly credit score, and the log-odds of early delinquency will be assessed to determine whether the linearity assumption is reasonable.
+- **Multicollinearity:** Variance Inflation Factors (VIF) will be examined to identify potential multicollinearity among predictors.
+- **Model specification:** The inclusion of relevant predictors and the credit score-by-origination-year interaction will be evaluated to ensure the model is appropriately specified.
+
+**Model performance:**
+
+- **Discrimination:** The Area Under the ROC Curve (AUC-ROC) will assess the model's ability to distinguish between loans that experience early delinquency and those that do not. Precision-recall AUC will also be considered if the outcome is imbalanced.
+- **Classification performance:** Sensitivity, specificity, precision, and the confusion matrix will be examined using an appropriate classification threshold.
+- **Calibration:** Calibration plots and the Brier score will assess how closely predicted delinquency probabilities correspond to observed outcomes.
+- **Generalizability:** A time-based training and testing split will be used, where feasible, to evaluate performance on loans from a later origination period not used for model fitting.
+
+\newpage
+
+#### Exploratory Data Analysis
+
+*First, provide a snapshot of the data using the glimpse function or something similar. Then, present your EDA according to your SAP above. At minimum, you should present basic characteristics of your outcome alone (descriptive statistics and a plot) and at least one key relationship of interest, but the EDA should not exceed 3 pages. It may be useful to present a "Table 1" that gives descriptive statistics for several variables of interest. You are not required to complete data cleaning for the EDA.*
+
+```{r}
+
+library(tidyverse)
+
+data_dir <- "~/Desktop/Data"
+
+orig_files <- list.files(
+  data_dir,
+  pattern = "^orig_.*\\.txt$",
+  recursive = TRUE,
+  full.names = TRUE
+)
+
+perf_files <- list.files(
+  data_dir,
+  pattern = "^perf_.*\\.txt$",
+  recursive = TRUE,
+  full.names = TRUE )
+```
+
+```{r}
+orig_sample <- read_delim(
+  orig_files[1],
+  delim = "|",
+  col_names = FALSE,
+  n_max = 1000,
+  show_col_types = FALSE
+)
+
+perf_sample <- read_delim(
+  perf_files[1],
+  delim = "|",
+  col_names = FALSE,
+  n_max = 1000,
+  show_col_types = FALSE
+)
+
+glimpse(orig_sample)
+glimpse(perf_sample)
+```
+
+```{r}
+
+dim(orig_sample)
+dim(perf_sample)
+```
+
+```{r}
+
+colSums(is.na(orig_sample))
+```
+
+```{r}
+
+colSums(is.na(perf_sample))
+```
+
+```{r}
+head(orig_sample, 3)
+head(perf_sample, 3)
+
+```
+
+A sample of 1,000 observations was initially used to inspect the structure and variable types of the origination and performance files since the original dataset is huge. The origination sample contained 31 variables, while the performance sample contained 35 variables. Several variables contained missing values, particularly in the performance sample, where some columns were entirely empty in the selected observations. These missing values may reflect fields that are not applicable to every loan or observation. The variables will be examined further using the Freddie Mac data dictionary before conducting the full EDA.
+
+## Team Charter
+
+1.  When will you meet as a team to work on the project components? Will these meetings be held in person or virtually?
+2.  What is your group policy on missing team meetings (e.g., how much advance notice should be provided)?
+3.  How will your team communicate (email, Slack, text messages)? What is your policy on appropriate response time (within a certain number of hours? Nights/weekends?)?
