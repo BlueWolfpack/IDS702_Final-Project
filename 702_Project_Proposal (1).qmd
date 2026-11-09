@@ -319,6 +319,50 @@ Additional loan characteristics, including LTV, DTI, interest rate, and original
 
 ##### 4.2 Statistical Model (write in mathematical notation and define each term)
 
+$$P(Y_i=1) = \beta_0 + \beta_1 * \text{CS}_i + \beta_2 * \text{Year}_i + \beta_3 * (\text{CS}_i * \text{Year}_i) - \beta_4 * \text{LTV}_i + \beta_5 * \text{DTI}_i + \beta_6 * \text{Rate}_i - \beta_7 * \text{LoanAmount}_i$$
+
+Definition of terms:
+
+- $i$: Index representing each individual mortgage loan.
+
+- $Y_i$: Binary outcome indicating whether loan $i$ experiences 90 or more days delinquent within its first 12 months (1 = yes, 0 = no).
+
+- $P(Y_i=1)$: Probability that loan \$i\$ experiences early delinquency.
+
+- $\beta_0$: Model intercept.
+
+- $\beta_1$: Average borrower's credit score at loan origination.
+
+- $\beta_2$:
+
+- $\beta_3$:
+
+- $\beta_4$:
+
+- $\beta_5$:
+
+- $\beta_6$:
+
+- $\beta_7$:
+
+- $CS_i$: Borrower's credit score at loan origination.
+
+- $Year_i$: Origination year (2022, 2023, or 2024), represented by categorical indicator variables.
+
+- $CS_i * Year_i$: Interaction between credit score and origination year.
+
+- $LTV_i$: Original loan-to-value ratio.
+
+- $DTI_i$: Debt-to-income ratio.
+
+- $Rate_i$: Mortgage interest rate at origination.
+
+- $LoanAmount_i$: Original loan amount.
+
+- $\mathbf_i$: Vector of additional categorical loan characteristics, such as occupancy status, loan purpose, and property type.
+
+- $\boldsymbol$: Vector of coefficients associated with the additional categorical predictors.
+
 ##### 4.3 Rationale for the statistical model (why are you choosing to use this type of model? What about your data structure/characteristics are you accommodating with this model type?)
 
 We will use a multivariable logistic regression model to estimate the probability of early mortgage delinquency.
@@ -337,38 +381,6 @@ The model is:
   &+ \\boldsymbol\^\\mathbf_i\
   \\end\
   \$\$
-  
-$$P(Y_i=1) = \beta_0 + \beta_1 * \text{CS}_i + \beta_2 * \text{Year}_i + \beta_3 * (\text{CS}_i * \text{Year}_i) - \beta_4 * \text{LTV}_i + \beta_5 * \text{DTI}_i + \beta_6 * \text{Rate}_i - \beta_7 * \text{LoanAmount}_i$$
-
-Definition of terms:
-
-- $Y_i$: Binary outcome indicating whether loan $i$ experiences 90 or more days delinquent within its first 12 months (1 = yes, 0 = no).
-
-- $P(Y_i=1)$: Probability that loan \$i\$ experiences early delinquency.
-
-- \$\\text(p)=\\log\\left(\\frac\\right)\$: Log-odds of early delinquency.
-
-- \$\\beta_0\$: Model intercept.
-
-- \$CS_i\$: Borrower's credit score at loan origination.
-
-- \$Year_i\$: Origination year (2022, 2023, or 2024), represented by categorical indicator variables.
-
-- \$CS_i \\times Year_i\$: Interaction between credit score and origination year.
-
-- \$LTV_i\$: Original loan-to-value ratio.
-
-- \$DTI_i\$: Debt-to-income ratio.
-
-- \$Rate_i\$: Mortgage interest rate at origination.
-
-- \$LoanAmount_i\$: Original loan amount.
-
-- \$\\mathbf_i\$: Vector of additional categorical loan characteristics, such as occupancy status, loan purpose, and property type.
-
-- \$\\boldsymbol\$: Vector of coefficients associated with the additional categorical predictors.
-
-- \$i\$: Index representing each individual mortgage loan.
 
 Multivariable logistic regression is selected because the outcome, early mortgage delinquency, is binary. The model estimates the probability of delinquency based on borrower and loan characteristics, including credit score, LTV, DTI, and interest rate.
 
@@ -394,7 +406,7 @@ The multivariable logistic regression model relies on the following assumptions:
 
 7.  **No complete separation:** Predictor combinations should not perfectly distinguish delinquent from non-delinquent loans, as this can lead to unstable or non-finite coefficient estimates.
 
-4.4 Model Assessment (how will you assess the assumptions and model performance?)
+##### 4.5 Model Assessment (how will you assess the assumptions and model performance?)
 
 The logistic regression model will be assessed by examining its assumptions, goodness of fit, and predictive performance.
 
@@ -412,11 +424,7 @@ The logistic regression model will be assessed by examining its assumptions, goo
 - **Calibration:** Calibration plots and the Brier score will assess how closely predicted delinquency probabilities correspond to observed outcomes.
 - **Generalizability:** A time-based training and testing split will be used, where feasible, to evaluate performance on loans from a later origination period not used for model fitting.
 
-\newpage
-
 #### Exploratory Data Analysis
-
-*First, provide a snapshot of the data using the glimpse function or something similar. Then, present your EDA according to your SAP above. At minimum, you should present basic characteristics of your outcome alone (descriptive statistics and a plot) and at least one key relationship of interest, but the EDA should not exceed 3 pages. It may be useful to present a "Table 1" that gives descriptive statistics for several variables of interest. You are not required to complete data cleaning for the EDA.*
 
 ```{r}
 
@@ -486,5 +494,13 @@ A sample of 1,000 observations was initially used to inspect the structure and v
 ## Team Charter
 
 1.  When will you meet as a team to work on the project components? Will these meetings be held in person or virtually?
+
+> We will meet as a team Fridays at 11 am in the area outside the MIDS student lounge.
+
 2.  What is your group policy on missing team meetings (e.g., how much advance notice should be provided)?
+
+> A 24 hour advanced notice should be provided for planned absences from team meetings. (Or by the time stats class starts on Thursday). For unplanned absences, notice should be given as soon as possible.
+
 3.  How will your team communicate (email, Slack, text messages)? What is your policy on appropriate response time (within a certain number of hours? Nights/weekends?)?
+
+> Our primary mode of communication will be through WhatsApp. Team members should respond within 5 hours where appropriate during work hours, or by the next business day.
