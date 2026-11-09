@@ -48,25 +48,18 @@ The target of interpretation is this selected registry cohort and comparable com
 
 ##### 3.1 Primary outcome
 
-+--------------------+----------------------------+-------------------------------------------------------------+
-| Variable           | Description                | Coding / analysis                                           |
-+:===================+:===========================+:============================================================+
-| `enrollment_count` | Reported actual enrollment | Positive integer; natural logarithm in the primary model    |
-+--------------------+----------------------------+-------------------------------------------------------------+
-| `enrollment_type`  | Enrollment status          | `ACTUAL` required; estimated or missing enrollment excluded |
-+--------------------+----------------------------+-------------------------------------------------------------+
+| Variable | Description | Coding / analysis |
+|:---|:---|:---|
+| `enrollment_count` | Reported actual enrollment | Positive integer; natural logarithm in the primary model |
+| `enrollment_type` | Enrollment status | `ACTUAL` required; estimated or missing enrollment excluded |
 
 ##### 3.2 Primary independent variables
 
-+------------------------------+--------------------------------------------------------+---------------------------------------------------+
-| Variable                     | Description                                            | Coding / reference                                |
-+:=============================+:=======================================================+:==================================================+
-| `phase_group`                | Exact recorded development phase                       | `PHASE2` reference; `PHASE3` indicator $P$        |
-+------------------------------+--------------------------------------------------------+---------------------------------------------------+
-| `sponsor_group`              | Recorded lead-sponsor type                             | `NONINDUSTRY` reference; `INDUSTRY` indicator $I$ |
-+------------------------------+--------------------------------------------------------+---------------------------------------------------+
-| Phase-by-sponsor interaction | Whether the phase association differs by sponsor group | $P\times I$                                       |
-+------------------------------+--------------------------------------------------------+---------------------------------------------------+
+| Variable | Description | Coding / reference |
+|:---|:---|:---|
+| `phase_group` | Exact recorded development phase | `PHASE2` reference; `PHASE3` indicator $P$ |
+| `sponsor_group` | Recorded lead-sponsor type | `NONINDUSTRY` reference; `INDUSTRY` indicator $I$ |
+| Phase-by-sponsor interaction | Whether the phase association differs by sponsor group | $P\times I$ |
 
 `INDUSTRY` maps to industry; `NIH`, `FED`, `OTHER_GOV`, `NETWORK`, `OTHER`, and `INDIV` map to non-industry. Unknown or unmapped sponsor classes remain missing. Lead sponsor is not the same as all funding sources; non-industry is a heterogeneous category.
 
@@ -271,41 +264,28 @@ Loans will be included only when sufficient performance data are available to de
 
 3.1 Primary Outcome(s)
 
-+---------------------+--------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
-| Variable Name       | Description                                                                                                        | Coding specification                                                                                                                         |
-+=====================+====================================================================================================================+==============================================================================================================================================+
+| Variable Name | Description | Coding specification |
+|----|----|----|
 | `early_delinquency` | Indicates whether a mortgage loan reaches 90 or more days delinquent within its first 12 months after origination. | 1 = Reaches 90 or more days delinquent within the first 12 months; 0 = Does not reach 90 or more days delinquent within the first 12 months. |
-+---------------------+--------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
 
 3.2 Primary Independent Variable(s)
 
-+--------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+
-| Variable Name      | Description                                                                                                                                                          | Coding specification                                    |
-+====================+======================================================================================================================================================================+=========================================================+
-| `credit_score`     | Borrower's credit score recorded at the time the mortgage loan was originated.                                                                                       | Numeric value as recorded in the origination file.      |
-+--------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+
+| Variable Name | Description | Coding specification |
+|----|----|----|
+| `credit_score` | Borrower's credit score recorded at the time the mortgage loan was originated. | Numeric value as recorded in the origination file. |
 | `origination_year` | Calendar year in which the mortgage loan was originated. Used to examine whether the relationship between credit score and early delinquency differs across cohorts. | 2022, 2023, or 2024; treated as a categorical variable. |
-+--------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+
 
 3.3 Additional Variables of Interest (including potential confounders)
 
-+------------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
-| Variable Name          | Description                                                                                           | Coding Specification                                             |
-+========================+=======================================================================================================+==================================================================+
-| `ltv`                  | Loan-to-value ratio at origination, representing the loan amount relative to the property's value.    | Numeric percentage.                                              |
-+------------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
-| `dti`                  | Debt-to-income ratio at origination, representing the borrower's debt obligations relative to income. | Numeric percentage.                                              |
-+------------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
-| `interest_rate`        | Mortgage interest rate at origination.                                                                | Numeric percentage.                                              |
-+------------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
-| `original_loan_amount` | Initial principal amount of the mortgage loan.                                                        | Numeric value in U.S. dollars.                                   |
-+------------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
-| `occupancy_status`     | Indicates how the borrower intends to use the property.                                               | Categorical; coded according to the Freddie Mac data dictionary. |
-+------------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
-| `loan_purpose`         | Indicates the purpose of the mortgage, such as purchase or refinance.                                 | Categorical; coded according to the Freddie Mac data dictionary. |
-+------------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
-| `property_type`        | Describes the type of property securing the mortgage.                                                 | Categorical; coded according to the Freddie Mac data dictionary. |
-+------------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
+| Variable Name | Description | Coding Specification |
+|----|----|----|
+| `ltv` | Loan-to-value ratio at origination, representing the loan amount relative to the property's value. | Numeric percentage. |
+| `dti` | Debt-to-income ratio at origination, representing the borrower's debt obligations relative to income. | Numeric percentage. |
+| `interest_rate` | Mortgage interest rate at origination. | Numeric percentage. |
+| `original_loan_amount` | Initial principal amount of the mortgage loan. | Numeric value in U.S. dollars. |
+| `occupancy_status` | Indicates how the borrower intends to use the property. | Categorical; coded according to the Freddie Mac data dictionary. |
+| `loan_purpose` | Indicates the purpose of the mortgage, such as purchase or refinance. | Categorical; coded according to the Freddie Mac data dictionary. |
+| `property_type` | Describes the type of property securing the mortgage. | Categorical; coded according to the Freddie Mac data dictionary. |
 
 #### 4 Statistical Analysis Plan
 
@@ -319,70 +299,45 @@ Additional loan characteristics, including LTV, DTI, interest rate, and original
 
 ##### 4.2 Statistical Model (write in mathematical notation and define each term)
 
-$$P(Y_i=1) = \beta_0 + \beta_1 * \text{CS}_i + \beta_2 * \text{Year}_i + \beta_3 * (\text{CS}_i * \text{Year}_i) - \beta_4 * \text{LTV}_i + \beta_5 * \text{DTI}_i + \beta_6 * \text{Rate}_i - \beta_7 * \text{LoanAmount}_i$$
+$$\begin{aligned}
+\text{logit}[P(Y_i=1)] = \beta_0 {}& + \beta_1 * \text{CS}_i + \beta_2 * \text{Year2023}_i + \beta_3 * \text{Year2024}_i \\
+& + \beta_4 (\text{CS}_i * \text{Year2023}_i) + \beta_5 * (\text{CS}_i * \text{Year2024}_i) \\
+& + \beta_6 * \text{LTV}_i + \beta_7 * \text{DTI}_i + \beta_8 * \text{Rate}_i \\
+& + \beta_9 * \text{LoanAmount}_i + \epsilon
+\end{aligned}$$
+
+where $\text{logit}(p) = \log\big{(}\frac{p}{1-p}\big{)}$.
 
 Definition of terms:
 
-- $i$: Index representing each individual mortgage loan.
-
-- $Y_i$: Binary outcome indicating whether loan $i$ experiences 90 or more days delinquent within its first 12 months (1 = yes, 0 = no).
-
-- $P(Y_i=1)$: Probability that loan $i$ experiences early delinquency.
-
-- $\beta_0$: Model intercept.
-
-- $\beta_1$:
-
-- $\beta_2$:
-
-- $\beta_3$:
-
-- $\beta_4$:
-
-- $\beta_5$:
-
-- $\beta_6$:
-
-- $\beta_7$:
-
+- $i$: Index for each individual mortgage loan.
+- $Y_i$: Binary outcome indicating whether loan $i$ is 90 or more days delinquent within its first 12 months (1 = yes, 0 = no).
+- $P(Y_i = 1)$: Probability that loan $i$ experiences early delinquency.
+- $\operatorname{logit}(p)$: Log-odds of early delinquency, $\log\left(\frac{p}{1-p}\right)$.
+- $\beta_0$: Model intercept (log-odds for the reference group, 2022, when all other predictors equal zero).
+- $beta_1$: log odds for an increase in probability that loan $i$ experiences early delinquency per unit increase in credit score, holding all else constant for the 2022 cohort.
+- $\beta_2$: Differences in log-odds for the 2023 cohort relative to 2022.
+- $\beta_3$: Differences in log-odds for the 2024 cohort relative to 2022.
+- $\beta_4$: The log odds change in the credit score effect for the 2023 cohort relative to 2022.
+- $\beta_5$: The log odds change in the credit score effect for the 2024 cohort relative to 2022.
+- $\beta_6$: log odds for an increase in probability that loan $i$ experiences early delinquency per unit increase in LTV, holding all else constant for the 2022 cohort.
+- $\beta_7$: log odds for an increase in probability that loan $i$ experiences early delinquency per unit increase in DTI, holding all else constant for the 2022 cohort.
+- $\beta_8$: log odds for an increase in probability that loan $i$ experiences early delinquency per unit increase in Rate, holding all else constant for the 2022 cohort.
+- $\beta_9$: log odds for an increase in probability that loan $i$ experiences early delinquency per dollar increase in the loan amount, holding all else constant for the 2022 cohort.
 - $CS_i$: Borrower's credit score at loan origination.
-
-- $Year_i$: Origination year (2022, 2023, or 2024), represented by categorical indicator variables.
-
-- $CS_i * Year_i$: Interaction between credit score and origination year.
-
+- $Year2023_i$: Indicator variables for origination year, with 2022 as the reference category.
+- $Year2024_i$: Indicator variables for origination year, with 2022 as the reference category.
+- $CS_i * (Year2023_i)$: Interaction between credit score and origination year.
 - $LTV_i$: Original loan-to-value ratio.
-
 - $DTI_i$: Debt-to-income ratio.
-
 - $Rate_i$: Mortgage interest rate at origination.
-
 - $LoanAmount_i$: Original loan amount.
-
-- $\mathbf_i$: Vector of additional categorical loan characteristics, such as occupancy status, loan purpose, and property type.
-
-- $\boldsymbol$: Vector of coefficients associated with the additional categorical predictors.
 
 ##### 4.3 Rationale for the statistical model (why are you choosing to use this type of model? What about your data structure/characteristics are you accommodating with this model type?)
 
-We will use a multivariable logistic regression model to estimate the probability of early mortgage delinquency.
+We will use a multinomial logistic regression model to estimate the probability of early mortgage delinquency.
 
-The model is:
-
-\$\$ \\begin\
-\\text\\left\[P(Y_i=1)\\right\] =;&\
-\\beta_0 + \\beta_1 CS_i + \\beta_2 Year_i \\\
-&+ \\beta_3(CS_i \\times Year_i)
-
-- \\beta_4 LTV_i \\\
-  &+ \\beta_5 DTI_i + \\beta_6 Rate_i
-
-- \\beta_7 LoanAmount_i \\\
-  &+ \\boldsymbol\^\\mathbf_i\
-  \\end\
-  \$\$
-
-Multivariable logistic regression is selected because the outcome, early mortgage delinquency, is binary. The model estimates the probability of delinquency based on borrower and loan characteristics, including credit score, LTV, DTI, and interest rate.
+Multinomial logistic regression is selected because the outcome, early mortgage delinquency, is binary. The model estimates the probability of delinquency based on borrower and loan characteristics, including credit score, LTV, DTI, and interest rate.
 
 It allows us to examine multiple predictors simultaneously and interpret their associations through odds ratios. The interaction between credit score and origination year will also help determine whether this relationship differs across the 2022–2024 cohorts.
 
@@ -486,6 +441,33 @@ colSums(is.na(perf_sample))
 ```{r}
 head(orig_sample, 3)
 head(perf_sample, 3)
+
+```
+
+```{r}
+
+ggplot(orig_sample, aes(x = X9)) +
+  geom_histogram(bins = 30, fill = "steelblue", color = "white") +
+  labs(
+    title = "Distribution of Original Loan-to-Value ratio",
+    x = "Original LTV (%)",
+    y = "Number of Loans"
+  ) +
+  
+  theme_minimal()
+
+```
+
+```{r}
+
+ggplot(orig_sample, aes(x = X1, y = X9)) +
+  geom_point(alpha = 0.4) +
+  labs(
+    title = "Original LTV vs. Borrower Credit Score",
+    x = "Credit Score",
+    y = "Original LTV (%)"
+  ) +
+  theme_minimal()
 
 ```
 
