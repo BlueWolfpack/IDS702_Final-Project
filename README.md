@@ -2,7 +2,8 @@
 This repository is for the stats group project 
 
 
-## Data Access (Dataset Option 2)
+### From Default Prediction to Expected Credit Loss ( Dataset Option 2)
+#### Data Access 
 
 The Freddie Mac loan-level dataset used in this project is available through Google Drive:
 
@@ -11,7 +12,7 @@ The Freddie Mac loan-level dataset used in this project is available through Goo
 Due to the large size of the dataset, the files could not be uploaded directly to GitHub. Instead, they are provided through the Google Drive link above. The folder contains the origination and monthly performance files for the 2022–2024 cohorts.
 
 Download the required files and place them in the appropriate project directory before running the code. The provided scripts can then be used to read the data and perform exploratory data analysis (EDA).
-- Read the mortgage loan proposal (pdf) 
+
 
 ## Clinical-trials alternative (Dataset Option 1)
 
