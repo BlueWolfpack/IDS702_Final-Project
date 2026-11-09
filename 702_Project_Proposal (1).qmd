@@ -19,11 +19,9 @@ Link to your team's Github Repo: <https://github.com/BlueWolfpack/IDS702_Final-P
 
 **Project title:** Clinical-Trial Enrollment: Associations with Development Phase and Lead-Sponsor Type.
 
-**Team repository:** <https://github.com/BlueWolfpack/IDS702_Final-Project>.
-
 **Dataset folder:** <https://drive.google.com/drive/folders/1Zk7kmZaLdCKmmyyWo13c-JfCUxXnursR>.
 
-**Data citation:** U.S. National Library of Medicine. (2026). *ClinicalTrials.gov* [Registry data; API v2 extract retrieved November 8, 2026]. <https://clinicaltrials.gov/data-api/api>.
+**Data citation:** U.S. National Library of Medicine. (2026). *ClinicalTrials.gov* \[Registry data; API v2 extract retrieved November 8, 2026\]. <https://clinicaltrials.gov/data-api/api>.
 
 **Original collection / publication date:** This is a continuously updated registry, not a one-time survey. The frozen extract has registry data timestamp `2026-11-06T10:00:05`, reported by API v2.0.5. The scope is recorded study starts in 2015-2024; this is not the date range of all registry updates or completions.
 
@@ -33,8 +31,8 @@ Link to your team's Github Repo: <https://github.com/BlueWolfpack/IDS702_Final-P
 
 Trial enrollment measures study scale. Research administrators and trial planners may benefit from understanding how the distribution of trial size differs by phase and sponsor type. Enrollment is not a measure of drug quality, efficacy success, or participant-level benefit.
 
-1. Among eligible completed Phase 2 and Phase 3 drug or biological trials starting in 2015-2024, is development phase associated with actual enrollment after accounting for lead-sponsor type and start year?
-2. Does the Phase 3 versus Phase 2 association differ between industry and nonindustry lead sponsors, after accounting for start year?
+1.  Among eligible completed Phase 2 and Phase 3 drug or biological trials starting in 2015-2024, is development phase associated with actual enrollment after accounting for lead-sponsor type and start year?
+2.  Does the association between industry and non-industry lead sponsors differ between Phase 3 and Phase 2 trials, when accounting for start year?
 
 The second question concerns effect modification in an observational model, not a causal effect of changing a trial's sponsor.
 
@@ -42,7 +40,7 @@ The second question concerns effect modification in an observational model, not 
 
 Each observation is one registered trial with a unique NCT ID, not one participant, sponsor, company, or company-week. The API query selected completed interventional trials starting in 2015-2024 whose phases include Phase 2 or 3 and which have a drug or biological intervention. It returned **22,669 unique trials** in 23 selected-field response pages. Records are global; there is no U.S.-only or disease-specific restriction.
 
-The provisional analysis table contains **18,583 trials and 36 columns**. Eligibility requires one exact recorded phase (Phase 2 or Phase 3), positive actual enrollment, a known mapped lead-sponsor class, and a nonblank lead-sponsor name. Combined Phase 1/2 and Phase 2/3 trials remain in the full extract but are excluded from this comparison. Completed status does not establish treatment success.
+The provisional analysis table contains **18,583 trials and 36 columns**. Eligibility requires one exact recorded phase (Phase 2 or Phase 3), positive actual enrollment, a known mapped lead-sponsor class, and a non-blank lead-sponsor name. Combined Phase 1/2 and Phase 2/3 trials remain in the full extract but are excluded from this comparison. Completed status does not establish treatment success.
 
 The target of interpretation is this selected registry cohort and comparable completed registered trials, subject to model assumptions. This is not a probability sample of all clinical trials. Recent start cohorts have had less time to complete and enter this sample. These records reflect information reported by download time, not what was public at each historical date.
 
@@ -50,30 +48,49 @@ The target of interpretation is this selected registry cohort and comparable com
 
 ##### 3.1 Primary outcome
 
-| Variable | Description | Coding / analysis |
-|:--|:--|:--|
-| `enrollment_count` | Reported actual enrollment | Positive integer; natural logarithm in the primary model |
-| `enrollment_type` | Enrollment status | `ACTUAL` required; estimated or missing enrollment excluded |
++--------------------+----------------------------+-------------------------------------------------------------+
+| Variable           | Description                | Coding / analysis                                           |
++:===================+:===========================+:============================================================+
+| `enrollment_count` | Reported actual enrollment | Positive integer; natural logarithm in the primary model    |
++--------------------+----------------------------+-------------------------------------------------------------+
+| `enrollment_type`  | Enrollment status          | `ACTUAL` required; estimated or missing enrollment excluded |
++--------------------+----------------------------+-------------------------------------------------------------+
 
 ##### 3.2 Primary independent variables
 
-| Variable | Description | Coding / reference |
-|:--|:--|:--|
-| `phase_group` | Exact recorded development phase | `PHASE2` reference; `PHASE3` indicator $P$ |
-| `sponsor_group` | Recorded lead-sponsor type | `NONINDUSTRY` reference; `INDUSTRY` indicator $I$ |
-| Phase-by-sponsor interaction | Whether the phase association differs by sponsor group | $P\times I$ |
++------------------------------+--------------------------------------------------------+---------------------------------------------------+
+| Variable                     | Description                                            | Coding / reference                                |
++:=============================+:=======================================================+:==================================================+
+| `phase_group`                | Exact recorded development phase                       | `PHASE2` reference; `PHASE3` indicator $P$        |
++------------------------------+--------------------------------------------------------+---------------------------------------------------+
+| `sponsor_group`              | Recorded lead-sponsor type                             | `NONINDUSTRY` reference; `INDUSTRY` indicator $I$ |
++------------------------------+--------------------------------------------------------+---------------------------------------------------+
+| Phase-by-sponsor interaction | Whether the phase association differs by sponsor group | $P\times I$                                       |
++------------------------------+--------------------------------------------------------+---------------------------------------------------+
 
-`INDUSTRY` maps to industry; `NIH`, `FED`, `OTHER_GOV`, `NETWORK`, `OTHER`, and `INDIV` map to nonindustry. Unknown or unmapped sponsor classes remain missing. Lead sponsor is not the same as all funding sources; nonindustry is a heterogeneous category.
+`INDUSTRY` maps to industry; `NIH`, `FED`, `OTHER_GOV`, `NETWORK`, `OTHER`, and `INDIV` map to non-industry. Unknown or unmapped sponsor classes remain missing. Lead sponsor is not the same as all funding sources; non-industry is a heterogeneous category.
 
 ##### 3.3 Additional variables
 
-| Variable | Role | Specification |
-|:--|:--|:--|
-| `start_year` | Adjustment variable | Categorical 2015-2024; 2015 reference |
-| `lead_sponsor_name` | Clustering identifier | Recorded name; audit aliases and group sizes |
-| `nct_id` | Unique trial key | Deduplication and record checks; not a predictor |
-| `allocation`, `masking` | Supplementary design descriptions | Preserve source categories and missing values |
-| `has_drug_intervention`, `has_biological_intervention` | Intervention descriptors | Flags can both be true |
++-------------------------------+------------------------------------------------+--------------------------------------------------+
+| Variable                      | Role                                           | Specification                                    |
++:==============================+:===============================================+:=================================================+
+| `start_year`                  | Adjustment variable                            | Categorical 2015-2024; 2015 reference            |
++-------------------------------+------------------------------------------------+--------------------------------------------------+
+| `lead_sponsor_name`           | Clustering identifier                          | Recorded name; audit aliases and group sizes     |
++-------------------------------+------------------------------------------------+--------------------------------------------------+
+| `nct_id`                      | Unique trial key                               | Deduplication and record checks; not a predictor |
++-------------------------------+------------------------------------------------+--------------------------------------------------+
+| `allocation`, `masking`       | Supplementary design descriptions              | Preserve source categories and missing values    |
++-------------------------------+------------------------------------------------+--------------------------------------------------+
+| `has_drug_intervention`       | Records whether drug intervention or not       | 1 = True                                         |
+|                               |                                                |                                                  |
+|                               |                                                | 0 = False                                        |
++-------------------------------+------------------------------------------------+--------------------------------------------------+
+| `has_biological_intervention` | Records whether biological intervention or not | 1 = True                                         |
+|                               |                                                |                                                  |
+|                               |                                                | 0 = False                                        |
++-------------------------------+------------------------------------------------+--------------------------------------------------+
 
 #### 4. Statistical analysis plan
 
@@ -81,9 +98,9 @@ The target of interpretation is this selected registry cohort and comparable com
 
 Keep the frozen full extract, candidate table, dictionary, audit, raw selected-field responses, and source manifest. Confirm trial uniqueness, eligibility, coding, positive enrollment, and start years. The 4,086 exclusions have overlapping reasons: combined phases (4,015), enrollment not actual (88), enrollment missing (3), and unknown/unmapped sponsor class (5). Do not sum these reasons to derive the excluded total.
 
-Preserve partial dates without inventing days. Blank CSV cells denote missingness; the source allocation category `NA` means not applicable. JSON arrays remain within cells so that multiple conditions or interventions do not duplicate trials. Do not automatically remove outliers, winsorize enrollment, or impute numerical values. Check the largest reported enrollments against registry records; document any confirmed errors and corrections. Do not change valid extreme values merely because they are influential.
+Preserve partial dates without inventing days. Blank CSV cells denote missing data; the source allocation category `NA` means not applicable. JSON arrays remain within cells so that multiple conditions or interventions do not duplicate trials. Do not automatically remove outliers, winsorize enrollment, or impute numerical values. Check the largest reported enrollments against registry records; document any confirmed errors and corrections. Do not change valid extreme values merely because they are influential.
 
-EDA will report dimensions, types, missingness, phase/sponsor/year group sizes, enrollment median and interquartile range, mean and range, a log-scale histogram, and enrollment distributions by phase and sponsor. Examine sponsor cluster sizes and sparse phase-by-sponsor-by-year cells before inference. Supplementary design-variable missingness will be reported separately; if these variables enter a sensitivity model, state its complete-case sample explicitly.
+EDA will report dimensions, types, missing data, phase/sponsor/year group sizes, enrollment median and interquartile range, mean and range, a log-scale histogram, and enrollment distributions by phase and sponsor. Examine sponsor cluster sizes and sparse phase-by-sponsor-by-year cells before inference. Supplementary design-variable missingness will be reported separately; if these variables enter a sensitivity model, state its complete-case sample explicitly.
 
 ##### 4.2 Model and definitions
 
@@ -96,11 +113,11 @@ $$
   + \varepsilon_i.
 $$
 
-$\beta_0$ describes the reference group, Phase 2/nonindustry/2015. $\beta_P$ is the log phase contrast for nonindustry, $\beta_I$ the log sponsor contrast for Phase 2, and $\beta_{PI}$ the difference between phase contrasts. The year indicators allow flexible start-cohort differences. Residuals are $\varepsilon_i$.
+$\beta_0$ describes the reference group, Phase 2/non-industry/2015. $\beta_P$ is the log phase contrast for non-industry, $\beta_I$ the log sponsor contrast for Phase 2, and $\beta_{PI}$ the difference between phase contrasts. The year indicators allow flexible start-cohort differences. Residuals are $\varepsilon_i$.
 
 Use sponsor-clustered robust standard errors after auditing recorded sponsor names and cluster-size concentration. There are 4,790 distinct sponsor-name strings in the current candidate table; these are not necessarily 4,790 fully independent organizations.
 
-For **RQ1**, jointly test $H_0:\beta_P=\beta_{PI}=0$. Report Phase 3/Phase 2 geometric-mean ratios $\exp(\beta_P)$ for nonindustry and $\exp(\beta_P+\beta_{PI})$ for industry, with 95% confidence intervals. For **RQ2**, test $H_0:\beta_{PI}=0$ and report $\exp(\beta_{PI})$, the ratio of the two phase ratios. Use two-sided tests and Holm adjustment across the two planned question-level tests. Interpret effect sizes and intervals rather than p-values alone.
+For **RQ1**, jointly test $H_0:\beta_P=\beta_{PI}=0$. Report Phase 3/Phase 2 geometric-mean ratios $\exp(\beta_P)$ for non-industry and $\exp(\beta_P+\beta_{PI})$ for industry, with 95% confidence intervals. For **RQ2**, test $H_0:\beta_{PI}=0$ and report $\exp(\beta_{PI})$, the ratio of the two phase ratios. Use two-sided tests and Holm adjustment across the two planned question-level tests. Interpret effect sizes and intervals rather than p-values alone.
 
 ##### 4.3 Rationale and assumptions
 
@@ -115,8 +132,6 @@ Inspect residual-versus-fitted and residual-distribution plots, group-specific r
 Prespecify a negative-binomial log-link model with the same predictors as a sensitivity analysis for overdispersed counts, using sponsor-robust uncertainty where supported. It targets arithmetic conditional mean ratios, so numerical equality with the primary model is not expected. Also repeat the log model excluding the largest 1% of enrollments as a labeled sensitivity analysis; retain those trials in the primary analysis. If a count model fails to converge, report the failure rather than force an interpretation.
 
 The project emphasizes inference, not stock prediction or neural-network performance. No treatment recommendation or causal effect will be inferred. Disease, geography, study purpose, and design may account for observed associations; a coarse adjustment set cannot resolve all heterogeneity.
-
-\newpage
 
 #### Preliminary exploratory data analysis
 
@@ -177,8 +192,6 @@ hist(log10(y), breaks=seq(0,6,by=.2), col="#184B70", border="white",
 
 Median enrollment is 100 (IQR 40-260), compared with a mean of 416.2 and a maximum of 500,000. The upper tail motivates a log-scale primary analysis and influence diagnostics. NCT05148845 (500,000) and NCT04838795 (477,102) are the two largest reported enrollments; final cleaning should verify their records rather than automatically exclude them.
 
-\newpage
-
 ##### Table 2 and group distributions
 
 ```{r}
@@ -217,45 +230,36 @@ Next steps are to agree on the dataset option, audit extreme values and sponsor 
 
 This document uses base R and `knitr`, plus Quarto and a working PDF/LaTeX setup for PDF rendering. From the repository root, after downloading the candidate CSV:
 
-```{.bash}
+``` bash
 quarto render ClinicalTrials_Proposal.qmd --to html
 quarto render ClinicalTrials_Proposal.qmd --to pdf
 ```
 
 The accompanying PDF and machine-readable EDA summaries were independently generated from the same frozen CSV with `prepare_clinical_proposal.py`. The R QMD has been written for rerunning in the team's R/Quarto environment; it has not been executed on this machine, which currently lacks R and Quarto. The rendered PDF contains verified descriptive results, not fitted-model output.
 
-
-\newpage
-
 ### Dataset Option 2
 
 ------------------------------------------------------------------------
 
-Project Title: From Default Prediction to Expected Credit Loss: Examining Early Mortgage Delinquency and Credit Risk Across 2022–2024 Origination Cohorts
+**Project Title:** From Default Prediction to Expected Credit Loss: Examining Early Mortgage Delinquency and Credit Risk Across 2022–2024 Origination Cohorts
 
-Data citation (use APA formatting or something similar):
+**Data citation:**
 
 Freddie Mac. (n.d.). Single-Family Loan-Level Dataset. Freddie Mac. [https://www.freddiemac.com/research/loanlevel-datasets](https://www.freddiemac.com/research/loanlevel-datasets?utm_source=chatgpt.com)
 
-Original data collection date (when was the dataset published?):
+**Original data collection date:** The dataset contains mortgage origination and monthly performance records. The current historical data available on Freddie Mac's website includes performance information through June 30, 2026 (Q2 2026).
 
-The dataset contains mortgage origination and monthly performance records. The current historical data available on Freddie Mac's website includes performance information through June 30, 2026 (Q2 2026).
-
-Data pull date (when did you download the data you will use?):
-
-November 5, 2026
+**Data pull date:** November 5, 2026
 
 ------------------------------------------------------------------------
 
 #### 1 Research Question
 
-*Write the research question you are interested in investigating in your analysis. Consult [this helpful guide](https://writingcenter.gmu.edu/writing-resources/research-based-writing/how-to-write-a-research-question) for writing a good research question. Go beyond "is there a relationship between X and Y" to incorporate some statistical complexity, e.g., "is there a relationship between X and Y and does this relationship change over time?" You may also want to provide a second RQ as a backup and I can provide feedback on both options. Remember that you are required to use an inferential research question.*
+Does a borrower's credit score at mortgage origination have a significant association with the likelihood of experiencing early mortgage delinquency (90 or more days delinquent within the first 12 months), after adjusting for other loan characteristics?
 
-Does a borrower's credit score at mortgage origination have a significant association with the likelihood of experiencing early mortgage delinquency (90 or more days delinquent within the first 12 months), after adjusting for other loan characteristics, and does this association differ across the 2022–2024 origination cohorts?
+Does this association differ across the 2022–2024 origination cohorts?
 
 #### 2 Study Population
-
-Describe the observation units and how the data were collected.
 
 The study population will consist of single-family mortgage loans included in Freddie Mac's historical loan-level dataset, with origination cohorts from 2022 through 2024. The data were collected by Freddie Mac from mortgage loans purchased or guaranteed through its single-family mortgage programs.
 
@@ -265,49 +269,47 @@ Loans will be included only when sufficient performance data are available to de
 
 #### 3 Outcomes, Exposures, and Additional Variables of Interest
 
-*Add rows as necessary. Use the data dictionary for the coding specifications, e.g., 1=Diagnosed with CHD, 0=No diagnosis*
-
 3.1 Primary Outcome(s)
 
-| Variable Name | Description | Coding specification |
-|----|----|----|
-| early_delinquency | Indicates whether a mortgage loan reaches 90 or more days delinquent within its first 12 months after origination. | 1 = Reaches 90 or more days delinquent within the first 12 months; 0 = Does not reach 90 or more days delinquent within the first 12 months. |
++---------------------+--------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
+| Variable Name       | Description                                                                                                        | Coding specification                                                                                                                         |
++=====================+====================================================================================================================+==============================================================================================================================================+
+| `early_delinquency` | Indicates whether a mortgage loan reaches 90 or more days delinquent within its first 12 months after origination. | 1 = Reaches 90 or more days delinquent within the first 12 months; 0 = Does not reach 90 or more days delinquent within the first 12 months. |
++---------------------+--------------------------------------------------------------------------------------------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------+
 
 3.2 Primary Independent Variable(s)
 
-+------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+
-| Variable Name    | Description                                                                                                                                                          | Coding specification                                    |
-+==================+======================================================================================================================================================================+=========================================================+
-| credit_score     | Borrower's credit score recorded at the time the mortgage loan was originated.                                                                                       | Numeric value as recorded in the origination file.      |
-|                  |                                                                                                                                                                      |                                                         |
-| origination_year | Calendar year in which the mortgage loan was originated. Used to examine whether the relationship between credit score and early delinquency differs across cohorts. | 2022, 2023, or 2024; treated as a categorical variable. |
-+------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+
++--------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+
+| Variable Name      | Description                                                                                                                                                          | Coding specification                                    |
++====================+======================================================================================================================================================================+=========================================================+
+| `credit_score`     | Borrower's credit score recorded at the time the mortgage loan was originated.                                                                                       | Numeric value as recorded in the origination file.      |
++--------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+
+| `origination_year` | Calendar year in which the mortgage loan was originated. Used to examine whether the relationship between credit score and early delinquency differs across cohorts. | 2022, 2023, or 2024; treated as a categorical variable. |
++--------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------+
 
 3.3 Additional Variables of Interest (including potential confounders)
 
-+-----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
-| Variable Name         | Description                                                                                           | Coding specification                                             |
-+=======================+=======================================================================================================+==================================================================+
-| ltv                   | Loan-to-value ratio at origination, representing the loan amount relative to the property's value.    | Numeric percentage.                                              |
-|                       |                                                                                                       |                                                                  |
-| dti                   | Debt-to-income ratio at origination, representing the borrower's debt obligations relative to income. | Numeric percentage.                                              |
-|                       |                                                                                                       |                                                                  |
-| interest_rate         | Mortgage interest rate at origination.                                                                | Numeric percentage.                                              |
-|                       |                                                                                                       |                                                                  |
-| original_loan_amount  | Initial principal amount of the mortgage loan.                                                        | Numeric value in U.S. dollars.                                   |
-|                       |                                                                                                       |                                                                  |
-| occupancy_status      | Indicates how the borrower intends to use the property.                                               | Categorical; coded according to the Freddie Mac data dictionary. |
-|                       |                                                                                                       |                                                                  |
-| loan_purpose          | Indicates the purpose of the mortgage, such as purchase or refinance.                                 | Categorical; coded according to the Freddie Mac data dictionary. |
-|                       |                                                                                                       |                                                                  |
-| property_type         | Describes the type of property securing the mortgage.                                                 | Categorical; coded according to the Freddie Mac data dictionary. |
-+-----------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
++------------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
+| Variable Name          | Description                                                                                           | Coding Specification                                             |
++========================+=======================================================================================================+==================================================================+
+| `ltv`                  | Loan-to-value ratio at origination, representing the loan amount relative to the property's value.    | Numeric percentage.                                              |
++------------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
+| `dti`                  | Debt-to-income ratio at origination, representing the borrower's debt obligations relative to income. | Numeric percentage.                                              |
++------------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
+| `interest_rate`        | Mortgage interest rate at origination.                                                                | Numeric percentage.                                              |
++------------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
+| `original_loan_amount` | Initial principal amount of the mortgage loan.                                                        | Numeric value in U.S. dollars.                                   |
++------------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
+| `occupancy_status`     | Indicates how the borrower intends to use the property.                                               | Categorical; coded according to the Freddie Mac data dictionary. |
++------------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
+| `loan_purpose`         | Indicates the purpose of the mortgage, such as purchase or refinance.                                 | Categorical; coded according to the Freddie Mac data dictionary. |
++------------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
+| `property_type`        | Describes the type of property securing the mortgage.                                                 | Categorical; coded according to the Freddie Mac data dictionary. |
++------------------------+-------------------------------------------------------------------------------------------------------+------------------------------------------------------------------+
 
 #### 4 Statistical Analysis Plan
 
-4.1 Exploratory Data Analysis
-
-*Detail how you will investigate the data, including basic characteristics of the outcome and independent variable(s) of interest (e.g., "The outcome is continuous, so we will generate a histogram of the outcome. Then, we will generate a stacked histogram/scatter plot to explore the relationship between the outcome and the independent variable")*
+##### 4.1 Exploratory Data Analysis
 
 The exploratory data analysis (EDA) will begin with an overview of the origination and performance datasets, including their dimensions, variable types, and missing values. Descriptive statistics will be calculated for the main variables of interest.
 
@@ -315,16 +317,15 @@ The distribution of the binary outcome, early delinquency (90 or more days delin
 
 Additional loan characteristics, including LTV, DTI, interest rate, and original loan amount, will be summarized using descriptive statistics. Their relationships with early delinquency will be explored through appropriate plots and comparisons. Finally, delinquency patterns across the 2022, 2023, and 2024 origination cohorts will be examined to identify potential differences between years.
 
-4.2 Statistical Model (write in mathematical notation and define each term)
+##### 4.2 Statistical Model (write in mathematical notation and define each term)
 
-4.2 Rationale for the statistical model (why are you choosing to use this type of model? What about your data structure/characteristics are you accommodating with this model type?)
+##### 4.3 Rationale for the statistical model (why are you choosing to use this type of model? What about your data structure/characteristics are you accommodating with this model type?)
 
 We will use a multivariable logistic regression model to estimate the probability of early mortgage delinquency.
 
 The model is:
 
-\$\$\
-\\begin\
+\$\$ \\begin\
 \\text\\left\[P(Y_i=1)\\right\] =;&\
 \\beta_0 + \\beta_1 CS_i + \\beta_2 Year_i \\\
 &+ \\beta_3(CS_i \\times Year_i)
@@ -336,12 +337,14 @@ The model is:
   &+ \\boldsymbol\^\\mathbf_i\
   \\end\
   \$\$
+  
+$$P(Y_i=1) = \beta_0 + \beta_1 * \text{CS}_i + \beta_2 * \text{Year}_i + \beta_3 * (\text{CS}_i * \text{Year}_i) - \beta_4 * \text{LTV}_i + \beta_5 * \text{DTI}_i + \beta_6 * \text{Rate}_i - \beta_7 * \text{LoanAmount}_i$$
 
 Definition of terms:
 
-- \$Y_i\$: Binary outcome indicating whether loan \$i\$ experiences 90 or more days delinquent within its first 12 months (1 = yes, 0 = no).
+- $Y_i$: Binary outcome indicating whether loan $i$ experiences 90 or more days delinquent within its first 12 months (1 = yes, 0 = no).
 
-- \$P(Y_i=1)\$: Probability that loan \$i\$ experiences early delinquency.
+- $P(Y_i=1)$: Probability that loan \$i\$ experiences early delinquency.
 
 - \$\\text(p)=\\log\\left(\\frac\\right)\$: Log-odds of early delinquency.
 
@@ -373,7 +376,7 @@ It allows us to examine multiple predictors simultaneously and interpret their a
 
 Monthly performance records will be used to construct one outcome per loan, resulting in a loan-level dataset appropriate for logistic regression.
 
-4.3 Model Assumptions
+##### 4.4 Model Assumptions
 
 The multivariable logistic regression model relies on the following assumptions:
 
@@ -485,4 +488,3 @@ A sample of 1,000 observations was initially used to inspect the structure and v
 1.  When will you meet as a team to work on the project components? Will these meetings be held in person or virtually?
 2.  What is your group policy on missing team meetings (e.g., how much advance notice should be provided)?
 3.  How will your team communicate (email, Slack, text messages)? What is your policy on appropriate response time (within a certain number of hours? Nights/weekends?)?
-
