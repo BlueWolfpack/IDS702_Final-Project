@@ -6,7 +6,7 @@ This repository is for the stats group project
 
 The Freddie Mac loan-level dataset used in this project is available through Google Drive:
 
-[Access the dataset](https://drive.google.com/drive/folders/1wcYV5-2_TSR5FxkU4TL7xdaeFkxauKCt?usp=drive_link)
+[Access the dataset](https://drive.google.com/drive/folders/1A-jiI3fOxos6dzbDKUnv2i6MEL8mj_p6?usp=sharing)
 
 The folder contains the origination and monthly performance files for the 2022–2024 cohorts. Download the required files before running the analysis.
 
