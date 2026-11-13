@@ -1,0 +1,402 @@
+---
+title: "IDS 702 Project Proposal"
+author: "Haoran Wang, Laura Perkins, Masoma Shoayb"
+format: pdf
+editor: visual
+execute:
+  echo: TRUE
+  message: FALSE
+  warning: FALSE
+---
+
+## Project Proposal/Statistical Analysis Plan
+
+Link to your team's Github Repo: <https://github.com/BlueWolfpack/IDS702_Final-Project>
+
+### Dataset Option 2
+
+------------------------------------------------------------------------
+
+**Project Title:** From Default Prediction to Expected Credit Loss: Examining Early Mortgage Delinquency and Credit Risk Across 2022–2023 Origination Cohorts
+
+**Data citation:**
+
+Freddie Mac. (n.d.). Single-family loan-level dataset. Retrieved November 5, 2026, from [https://www.freddiemac.com/research/loanlevel-datasets](https://www.freddiemac.com/research/loanlevel-datasets?utm_source=chatgpt.com)
+
+**Original data collection date:** The dataset contains mortgage origination and monthly performance records. The current historical data available on Freddie Mac's website includes performance information through June 30, 2026 (Q2 2026).
+
+**Data pull date:** November 5, 2026
+
+------------------------------------------------------------------------
+
+#### 1 Research Question
+
+Does a borrower's credit score at mortgage origination have a significant association with the likelihood of experiencing early mortgage delinquency (90 or more days delinquent within the first 12 months), after adjusting for other loan characteristics?
+
+Does this association differ across the 2022–2023 origination cohorts?
+
+#### 2 Study Population
+
+The study population will consist of single-family mortgage loans included in Freddie Mac's historical loan-level dataset, with origination cohorts from 2022 and 2023. The data were collected by Freddie Mac from mortgage loans purchased or guaranteed through its single-family mortgage programs.
+
+The origination files contain loan characteristics recorded at the time of origination, while the performance files contain monthly updates on loan status and payment history. These files will be linked using the loan identifier. Each mortgage loan will represent one observation in the analysis.
+
+Loans will be included only when sufficient performance data are available to determine whether they experienced 90 or more days of delinquency during their first 12 months after origination.
+
+#### 3 Outcomes, Exposures, and Additional Variables of Interest
+
+3.1 Primary Outcome(s)
+
+| Variable Name | Description | Coding specification |
+|-----------------|--------------------------|--------------------------------|
+| `early_delinquency` | Indicates whether a mortgage loan reaches 90 or more days delinquent within its first 12 months after origination. | 1 = Reaches 90 or more days delinquent within the first 12 months; 0 = Does not reach 90 or more days delinquent within the first 12 months. |
+
+3.2 Primary Independent Variable(s)
+
+| Variable Name | Description | Coding specification |
+|----------------|---------------------------------------|--------------|
+| `credit_score` | Borrower's credit score recorded at the time the mortgage loan was originated. | Numeric value as recorded in the origination file. |
+| `origination_year` | Calendar year in which the mortgage loan was originated. Used to examine whether the relationship between credit score and early delinquency differs across cohorts. | 2022 or 2023; treated as a categorical variable. |
+
+3.3 Additional Variables of Interest (including potential confounders)
+
+| Variable Name | Description | Coding Specification |
+|-------------------|-------------------------------------|----------------------|
+| `ltv` | Loan-to-value ratio at origination, representing the loan amount relative to the property's value. | Numeric percentage. |
+| `dti` | Debt-to-income ratio at origination, representing the borrower's debt obligations relative to income. | Numeric percentage. |
+| `interest_rate` | Mortgage interest rate at origination. | Numeric percentage. |
+| `original_loan_amount` | Initial principal amount of the mortgage loan. | Numeric value in U.S. dollars. |
+| `occupancy_status` | Indicates how the borrower intends to use the property. | Categorical; coded according to the Freddie Mac data dictionary. |
+| `loan_purpose` | Indicates the purpose of the mortgage, such as purchase or refinance. | Categorical; coded according to the Freddie Mac data dictionary. |
+| `property_type` | Describes the type of property securing the mortgage. | Categorical; coded according to the Freddie Mac data dictionary. |
+
+#### 4 Statistical Analysis Plan
+
+##### 4.1 Exploratory Data Analysis
+
+The exploratory data analysis (EDA) will begin with an overview of the origination and performance datasets, including their dimensions, variable types, and missing values. Descriptive statistics will be calculated for the main variables of interest.
+
+The distribution of the binary outcome, early delinquency (90 or more days delinquent within the first 12 months), will be examined using counts, percentages, and a bar plot. Credit score, the primary independent variable, will be summarized using descriptive statistics and a histogram. A boxplot will compare credit score distributions between loans with and without early delinquency. Delinquency rates across credit score groups will also be examined.
+
+Additional loan characteristics, including LTV, DTI, interest rate, and original loan amount, will be summarized using descriptive statistics. Their relationships with early delinquency will be explored through appropriate plots and comparisons. Finally, delinquency patterns across the 2022 and 2023 origination cohorts will be examined to identify potential differences between years.
+
+##### 4.2 Statistical Model (write in mathematical notation and define each term)
+
+## 4.2 Statistical Model
+
+$$\begin{aligned}
+\text{logit}[P(Y_i=1)] = \beta_0 {}& + \beta_1 \, \text{CS}_i + \beta_2 \, \text{Year2023}_i + \beta_3 \, (\text{CS}_i \times \text{Year2023}_i) \\
+& + \beta_4 \, \text{LTV}_i + \beta_5 \, \text{DTI}_i + \beta_6 \, \text{Rate}_i + \beta_7 \, \text{LoanAmount}_i
+\end{aligned}$$
+
+where $\text{logit}(p) = \log\left(\frac{p}{1-p}\right)$.
+
+Definition of terms:
+
+- $i$: Index for each individual mortgage loan.
+- $Y_i$: Binary outcome indicating whether loan $i$ is 90 or more days delinquent within its first 12 months (1 = yes, 0 = no).
+- $P(Y_i = 1)$: Probability that loan $i$ experiences early delinquency.
+- $\text{logit}(p)$: Log-odds of early delinquency.
+- $\beta_0$: Model intercept (log-odds of early delinquency for the reference group, 2022 loans, when all other predictors equal zero).
+- $\beta_1$: Change in the log-odds of early delinquency per one-unit increase in credit score for the 2022 cohort, holding all other predictors constant.
+- $\beta_2$: Difference in the log-odds of early delinquency for the 2023 cohort relative to the 2022 cohort, holding all other predictors constant.
+- $\beta_3$: Change in the credit score effect for the 2023 cohort relative to the 2022 cohort. The credit score effect for the 2023 cohort is $\beta_1 + \beta_3$.
+- $\beta_4$: Change in the log-odds of early delinquency per one-unit increase in LTV, holding all other predictors constant.
+- $\beta_5$: Change in the log-odds of early delinquency per one-unit increase in DTI, holding all other predictors constant.
+- $\beta_6$: Change in the log-odds of early delinquency per one-unit increase in the interest rate, holding all other predictors constant.
+- $\beta_7$: Change in the log-odds of early delinquency per one-dollar increase in the loan amount, holding all other predictors constant.
+- $\text{CS}_i$: Borrower's credit score at loan origination.
+- $\text{Year2023}_i$: Indicator variable for origination year (1 = loan originated in 2023, 0 = originated in 2022; 2022 is the reference category).
+- $\text{CS}_i \times \text{Year2023}_i$: Interaction between credit score and origination year.
+- $\text{LTV}_i$: Original loan-to-value ratio.
+- $\text{DTI}_i$: Debt-to-income ratio.
+- $\text{Rate}_i$: Mortgage interest rate at origination.
+- $\text{LoanAmount}_i$: Original loan amount.
+
+##### 4.3 Rationale for the statistical model (why are you choosing to use this type of model? What about your data structure/characteristics are you accommodating with this model type?)
+
+We will use a binary logistic regression model to estimate the probability of early mortgage delinquency.
+
+Binary logistic regression is appropriate because the outcome, early mortgage delinquency, has two possible values: whether a loan becomes 90 or more days delinquent within its first 12 months (1 = yes, 0 = no). The model estimates the probability of early delinquency based on borrower and loan characteristics, including credit score, loan-to-value ratio (LTV), debt-to-income ratio (DTI), interest rate, and original loan amount.
+
+This model allows us to examine multiple predictors simultaneously while holding other variables constant and interpret their associations with early delinquency through odds ratios. We will also include an interaction between credit score and origination year to investigate whether the association between credit score and early delinquency differs between the 2022 and 2023 origination cohorts.
+
+Monthly performance records will be used to construct one binary outcome per mortgage loan. This results in a loan-level dataset in which each observation represents one mortgage loan, making binary logistic regression an appropriate modeling approach.
+
+#### 4.4 Model Assumptions
+
+The multivariable logistic regression model relies on the following assumptions:
+
+1.  **Binary outcome:** The response variable, early delinquency, is binary, indicating whether a loan reaches 90 or more days delinquent within its first 12 months (1 = yes, 0 = no).
+
+2.  **Independence of observations:** Each loan contributes one observation to the analysis. Monthly performance records are used to construct the outcome rather than treated as separate independent observations. Each loan should appear only once in the final analytical dataset.
+
+3.  **Linearity in the logit:** Continuous predictors, particularly credit score, are assumed to have a linear relationship with the log-odds of early delinquency. This assumption will be examined during model assessment.
+
+4.  **No severe multicollinearity:** Predictors should not have excessively high correlations with one another. This will be assessed using correlation analysis and Variance Inflation Factors (VIF).
+
+5.  **Adequate sample size:** The dataset should contain sufficient observations and early delinquency events relative to the number of model parameters to support reliable estimation.
+
+6.  **Correct model specification:** Relevant predictors and the planned interaction between credit score and origination year should be appropriately included in the model.
+
+7.  **No complete or quasi-complete separation:** Predictor combinations should not perfectly or nearly perfectly distinguish delinquent from non-delinquent loans, as this can lead to unstable or non-finite coefficient estimates.
+
+#### 4.5 Model Assessment (how will you assess the assumptions and model performance?)
+
+The binary logistic regression model will be assessed by examining the assumptions described in Section 4.4 and evaluating the statistical significance and uncertainty of the estimated associations.
+
+**Assessment of assumptions:**
+
+- **Linearity in the logit:** The relationships between continuous predictors, particularly credit score, LTV, DTI, interest rate, and loan amount, and the log-odds of early delinquency will be examined using plots to assess whether the linearity assumption is reasonable. If clear nonlinear patterns are observed, transformations or alternative representations of the predictors will be considered.
+
+- **Multicollinearity:** Pairwise correlations and Variance Inflation Factors (VIF) will be used to identify potential multicollinearity among predictors.
+
+- **Independence of observations:** The final analytical dataset will be checked to confirm that each `loan_id` appears only once.
+
+- **Separation:** Potential complete or quasi-complete separation will be examined by checking for model warnings, unusually large coefficient estimates or standard errors, and sparse outcome groups.
+
+**Inference and model comparison:**
+
+- **Likelihood ratio test:** The model with the credit score-by-origination-year interaction will be compared with the same model without the interaction to assess whether the interaction improves model fit.
+
+- **Odds ratios and confidence intervals:** Odds ratios with 95% confidence intervals will be reported to describe the magnitude and uncertainty of the estimated associations. Estimates will be interpreted using meaningful units, such as a 10-point increase in credit score and a \$10,000 increase in original loan amount.
+
+Particular attention will be given to the credit score-by-origination-year interaction because it addresses whether the association between credit score and early delinquency differs between the 2022 and 2023 origination cohorts.
+
+#### Exploratory Data Analysis
+
+```{r}
+
+required_packages <- c("dplyr", "readr", "arrow", "ggplot2")
+
+missing_packages <- required_packages[
+  !vapply(required_packages, requireNamespace, logical(1), quietly = TRUE)
+]
+
+if (length(missing_packages) > 0) {
+  stop(
+    "Install the following packages: ",
+    paste(missing_packages, collapse = ", ")
+  )
+}
+
+library(dplyr)
+library(readr)
+library(arrow)
+library(ggplot2)
+```
+
+```{r}
+
+eda_data <- arrow::read_parquet("Data/eda_2022Q1.parquet")
+
+dplyr::glimpse(eda_data)
+
+```
+
+```{r}
+
+# Snapshot of the data
+
+dplyr::glimpse(eda_data)
+
+eda_data |>
+  dplyr::summarise(
+    total_loans = dplyr::n(),
+    unique_loans = dplyr::n_distinct(loan_id),
+    duplicate_loans = total_loans - unique_loans,
+    missing_credit_score = sum(is.na(credit_score)),
+    missing_ltv = sum(is.na(original_ltv)),
+    missing_dti = sum(is.na(original_dti)),
+    missing_interest_rate = sum(is.na(interest_rate))
+  )
+```
+
+```{r}
+
+eda_data |>
+  dplyr::summarise(
+    total_loans = dplyr::n(),
+    unique_loans = dplyr::n_distinct(loan_id),
+    duplicate_loans = total_loans - unique_loans
+  )
+
+```
+
+```{r}
+
+## 3. Outcome variable: Early mortgage delinquency
+
+outcome_summary <- eda_data |>
+  dplyr::count(early_delinquency) |>
+  dplyr::mutate(
+    outcome = dplyr::if_else(
+      early_delinquency == 1,
+      "Early delinquency",
+      "No early delinquency"
+    ),
+    percentage = n / sum(n) * 100
+  )
+
+outcome_summary
+```
+
+```{r}
+
+# Calculate the number and percentage of loans in each outcome group.
+outcome_summary <- eda_data |>
+  dplyr::count(early_delinquency) |>
+  dplyr::mutate(
+    outcome = factor(
+      early_delinquency,
+      levels = c(0, 1),
+      labels = c("No early delinquency", "Early delinquency")
+    ),
+    percentage = n / sum(n)
+  )
+
+# Plot the outcome distribution with counts and percentages.
+# Comma formatting improves readability for large loan counts.
+ggplot(
+  outcome_summary,
+  aes(x = outcome, y = n)
+) +
+  geom_col(fill = "steelblue") +
+  geom_text(
+    aes(
+      label = paste0(
+        scales::comma(n),
+        " (",
+        scales::percent(percentage, accuracy = 0.1),
+        ")"
+      )
+    ),
+    vjust = -0.4,
+    size = 3.5
+  ) +
+  scale_y_continuous(
+    labels = scales::comma,
+    expand = expansion(mult = c(0, 0.15))
+  ) +
+  labs(
+    title = "Distribution of Early Mortgage Delinquency",
+    subtitle = paste0(
+      "Early delinquency rate: ",
+      scales::percent(
+        mean(eda_data$early_delinquency, na.rm = TRUE),
+        accuracy = 0.1
+      )
+    ),
+    x = NULL,
+    y = "Number of loans"
+  ) +
+  theme_minimal()
+```
+
+Figure 1 shows that early delinquency is rare in the 2022 Q1 subset: 3,671 of 550,527 loans (0.7%) reached 90 or more days delinquent within 12 months, while 546,856 (99.3%) did not. Although the outcome is imbalanced, the number of events is large enough to support a logistic regression model.
+
+```{r}
+
+eda_data |>
+  dplyr::summarise(
+    delinquent_loans = sum(early_delinquency == 1),
+    total_loans = dplyr::n(),
+    event_rate = mean(early_delinquency) * 100
+  )
+```
+
+```{r}
+
+eda_data |>
+  dplyr::group_by(early_delinquency) |>
+  dplyr::summarise(
+    number_of_loans = dplyr::n(),
+    mean_credit_score = mean(credit_score, na.rm = TRUE),
+    median_credit_score = median(credit_score, na.rm = TRUE),
+    sd_credit_score = sd(credit_score, na.rm = TRUE),
+    .groups = "drop"
+  )
+```
+
+```{r}
+
+# Check for credit scores outside the expected range (300–850).
+# These values may represent invalid or special missing-value codes.
+eda_data |>
+  dplyr::filter(credit_score < 300 | credit_score > 850) |>
+  dplyr::count(credit_score)
+```
+
+```{r}
+
+# Create a separate EDA dataset.
+# Treat credit scores outside 300–850 as missing (NA),
+# while preserving the original dataset for reference.
+eda_data_clean <- eda_data |>
+  dplyr::mutate(
+    credit_score = dplyr::if_else(
+      credit_score < 300 | credit_score > 850,
+      NA_real_,
+      credit_score
+    )
+  )
+```
+
+```{r}
+# Compare credit score distributions between loans with and without
+# early delinquency. Exclude missing credit scores from the plot.
+
+ggplot(
+  eda_data_clean |>
+    dplyr::filter(!is.na(credit_score)),
+  aes(
+    x = factor(
+      early_delinquency,
+      levels = c(0, 1),
+      labels = c("No early delinquency", "Early delinquency")
+    ),
+    y = credit_score
+  )
+) +
+  geom_boxplot(fill = "steelblue", alpha = 0.7) +
+  labs(
+    title = "Credit Score by Early Delinquency Status",
+    x = NULL,
+    y = "Credit score"
+  ) +
+  theme_minimal()
+```
+
+Figure 2 compares credit scores by delinquency status. Loans with early delinquency had lower credit scores at origination (median about 695) than loans without (median about 750), and the interquartile range of the delinquent group sat lower. The distributions overlap considerably, so credit score alone does not separate the groups. These patterns are unadjusted and suggest a negative association between credit score and early delinquency, which we will test in the multivariable model
+
+```{r}
+
+# Inspect credit scores below 650 to determine whether they are
+# plausible observations or require further investigation.
+# Low scores are not automatically treated as invalid.
+
+eda_data |>
+  dplyr::filter(credit_score < 650) |>
+  dplyr::select(loan_id, credit_score, early_delinquency) |>
+  dplyr::arrange(credit_score)
+```
+
+Interpretation: The dataset contains 22,183 mortgage loan observations and 313 variables. As part of the data inspection, credit scores below 650 were flagged for further investigation to assess whether they represent plausible borrower credit scores or potential data-quality issues. These observations were not automatically considered invalid, since lower credit scores can represent legitimate borrowers.
+
+**Note on the EDA Dataset:** Since the full Freddie Mac dataset is very large, we created a smaller, processed subset from the 2022 Q1 origination cohort and saved it in Parquet format. This allows the EDA to be included in and rendered together with the proposal without requiring the full dataset. The subset is used to demonstrate the planned EDA and explore patterns relevant to our research questions. If we move forward with the project, we will determine an appropriate approach for processing the full dataset and conducting the final analysis using the 2022 and 2023 origination cohorts.
+
+**Access to the Full 2022-2023 Dataset:** <https://drive.google.com/drive/folders/1A-jiI3fOxos6dzbDKUnv2i6MEL8mj_p6?usp=sharing>
+
+## Team Charter
+
+1.  When will you meet as a team to work on the project components? Will these meetings be held in person or virtually?
+
+    We will meet as a team Fridays at 11 am in the area outside the MIDS student lounge.
+
+2.  What is your group policy on missing team meetings (e.g., how much advance notice should be provided)?
+
+A 24 hour advanced notice should be provided for planned absences from team meetings. (Or by the time stats class starts on Thursday). For unplanned absences, notice should be given as soon as possible.
+
+3.  How will your team communicate (email, Slack, text messages)? What is your policy on appropriate response time (within a certain number of hours? Nights/weekends?)?
+
+Our primary mode of communication will be through WhatsApp. Team members should respond within 5 hours where appropriate during work hours, or by the next business day.
