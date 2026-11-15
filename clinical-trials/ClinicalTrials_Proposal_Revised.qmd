@@ -1,0 +1,138 @@
+---
+title: "Clinical Trial Enrollment by Lead Sponsor and Phase"
+subtitle: "IDS 702 — Revised Dataset 1 Proposal"
+author: "Haoran Wang, Laura Perkins, Masoma Shoayb"
+format: pdf
+editor: visual
+execute:
+  echo: false
+  message: false
+  warning: false
+---
+
+**Team repository:** <https://github.com/BlueWolfpack/IDS702_Final-Project>
+
+**Dataset:** U.S. National Library of Medicine. (2026). *ClinicalTrials.gov* [Registry data, API v2 extract retrieved November 8, 2026]. <https://clinicaltrials.gov/data-api/api>. The registry extract was current as of November 6, 2026. [Frozen dataset folder](https://drive.google.com/drive/folders/1Zk7kmZaLdCKmmyyWo13c-JfCUxXnursR).
+
+## 1. Research question
+
+Among completed Phase 2 and Phase 3 drug or biological trials that started in 2015–2024, **does the difference in mean actual enrollment between industry and non-industry lead sponsors vary by phase, after adjusting for start year?**
+
+Trial planners already expect enrollment needs to differ by phase. Comparing sponsors within each phase asks whether a single sponsor difference would describe both phases or whether separate benchmarks would be more informative. The analysis estimates associations in registry data; it does not estimate what would happen if a trial changed sponsors.
+
+## 2. Study population
+
+Each observation is one registered trial with a unique NCT ID. The ClinicalTrials.gov API query returned 22,669 completed interventional trials with Phase 2 or Phase 3 listed and a drug or biological intervention. The analysis dataset has 18,583 trials and 36 variables. We retain trials with exactly one recorded phase (Phase 2 or Phase 3), positive actual enrollment, a known lead-sponsor class, and a nonblank lead-sponsor name.
+
+The registry includes trials worldwide. Results describe this completed, registered cohort; they may not generalize to ongoing or unregistered trials. Recent cohorts had less time to reach completion.
+
+## 3. Variables
+
+| Variable | Role | Coding |
+|:---|:---|:---|
+| Actual enrollment | Numerical outcome | Reported number of participants; positive counts marked actual |
+| Development phase | Categorical predictor | Phase 2 (reference) or Phase 3 |
+| Lead-sponsor type | Categorical predictor | Non-industry (reference) or industry |
+| Phase × sponsor type | Interaction | Allows the sponsor difference to vary by phase |
+| Start year | Adjustment variable | Categorical, 2015–2024; 2015 reference |
+| Lead-sponsor name | Clustering identifier | Recorded name; review aliases before modeling |
+
+Industry uses the registry's industry classification. Non-industry combines government, network, individual, and other known non-industry classes. Lead-sponsor type does not identify every source of funding. The registry also contains descriptive variables such as allocation and masking.
+
+## 4. Statistical analysis plan
+
+### Exploratory analysis
+
+Check trial IDs, eligibility, missing values, phase-by-sponsor-by-year cell sizes, and sponsor cluster sizes. Summarize enrollment with the mean, median, quartiles, and range. Plot enrollment on its original scale, including a zoomed view to show the main distribution, and compare enrollment across the four phase-by-sponsor groups. Check the largest reported enrollments against the registry; retain valid values in the primary analysis.
+
+### Model and inference
+
+Start with linear regression for actual enrollment in participants. Let $Y_i$ be enrollment, $P_i$ indicate Phase 3, $I_i$ indicate industry lead sponsorship, and $S_i$ be start year for trial $i$:
+
+$$
+Y_i = \beta_0 + \beta_P P_i + \beta_I I_i + \beta_{PI}P_i I_i
+      + \sum_{y=2016}^{2024}\gamma_y\mathbf{1}(S_i=y)
+      + \varepsilon_i.
+$$
+
+The intercept is the mean for Phase 2 non-industry trials starting in 2015. The coefficient $\beta_P$ is the Phase 3 minus Phase 2 difference among non-industry trials. The industry minus non-industry difference is $\beta_I$ in Phase 2 and $\beta_I+\beta_{PI}$ in Phase 3. The interaction $\beta_{PI}$ is how much larger or smaller that sponsor difference is in Phase 3, measured in participants. The $\gamma_y$ terms adjust for start year, and $\varepsilon_i$ is the model error.
+
+Test $H_0:\beta_{PI}=0$ against a two-sided alternative. Report the interaction and both within-phase sponsor differences with 95% confidence intervals. Use sponsor-clustered standard errors after checking sponsor names and cluster sizes. This allows for unequal error variance and dependence within a sponsor, assuming adequate support and sufficiently independent sponsor clusters.
+
+### Model assessment and sensitivity
+
+The original scale directly answers the question about differences in mean numbers of participants. Outcome skewness alone does not establish a violation: the normality assumption for classical small-sample inference concerns the errors. Inspect residuals versus fitted values and residuals by phase, sponsor, and year to assess the mean specification and spread. Use a residual Q–Q plot to examine the tails, and review leverage, Cook's distance, and sponsor-level influence.
+
+Keep the full eligible cohort in the primary fit. As a sensitivity check, repeat the same model excluding the two largest reported enrollments to see how strongly they affect the interaction. If the diagnostics support examining log enrollment, report it separately as a comparison on a proportional scale. Its exponentiated interaction is a ratio of sponsor geometric-mean ratios, so it answers a different question from the difference in mean participants. Assess whether the substantive conclusions are sensitive to the outcome scale; do not choose the scale based on statistical significance.
+
+Disease area, trial design, geography, and which trials reach completion could account for some of the differences. Adjusting for start year does not resolve those limitations.
+
+\newpage
+
+## Preliminary exploratory data analysis
+
+The frozen candidate CSV is bundled beside this document and read directly from its compressed file. The analysis below is descriptive.
+
+```{r}
+#| label: clinical-data
+#| include: false
+data_dir <- Sys.getenv("CLINICAL_DATA_DIR", unset = ".")
+csv_path <- file.path(data_dir, "trials_analysis_candidate.csv")
+if (!file.exists(csv_path)) csv_path <- paste0(csv_path, ".gz")
+if (!file.exists(csv_path)) {
+  stop("Keep the candidate CSV or CSV.gz beside this QMD, or set CLINICAL_DATA_DIR.")
+}
+trials <- read.csv(csv_path, na.strings = "", stringsAsFactors = FALSE)
+stopifnot(
+  nrow(trials) == 18583L, ncol(trials) == 36L,
+  !anyNA(trials$nct_id), !anyDuplicated(trials$nct_id),
+  all(trials$enrollment_count > 0),
+  all(trials$enrollment_type == "ACTUAL"),
+  all(trials$phase_group %in% c("PHASE2", "PHASE3")),
+  all(trials$sponsor_group %in% c("NONINDUSTRY", "INDUSTRY")),
+  all(trials$start_year %in% 2015:2024)
+)
+y <- trials$enrollment_count
+phase <- factor(trials$phase_group, c("PHASE2", "PHASE3"),
+                c("Phase 2", "Phase 3"))
+sponsor <- factor(trials$sponsor_group, c("NONINDUSTRY", "INDUSTRY"),
+                  c("Non-industry", "Industry"))
+groups <- interaction(sponsor, phase, sep = ", ")
+```
+
+There are 18,583 unique trials and 36 variables. Enrollment is numerical; phase and sponsor type are categorical. The year is stored as a number and modeled as a category. The outcome and main predictors are complete by the eligibility rules.
+
+Median enrollment is 100 participants (IQR 40–260), and the mean is 416.2. The range is 1 to 500,000. The two largest reported enrollments are 477,102 and 500,000; without them, the overall descriptive mean is 363.6. They affect the mean, but the upper tail extends beyond those two trials: 327 trials enrolled more than 2,000 participants.
+
+```{r}
+#| label: fig-enrollment-original
+#| fig-cap: "Actual enrollment in participants on the original scale. The left panel includes all 18,583 trials. The right panel shows the 18,256 trials at or below 2,000 participants (98.2%); the other 327 are omitted from that panel only."
+#| fig-width: 7
+#| fig-height: 3.1
+old_par <- par(mfrow = c(1, 2), mar = c(4.5, 4.3, 2.1, 0.6))
+hist(y, breaks = seq(0, 500000, by = 10000),
+     main = "Full range", xlab = "Participants",
+     col = "steelblue", border = "white", xaxt = "n")
+axis(1, at = seq(0, 500000, by = 100000),
+     labels = c("0", "100k", "200k", "300k", "400k", "500k"))
+hist(y[y <= 2000], breaks = seq(0, 2000, by = 50),
+     main = "0-2,000 participants", xlab = "Participants",
+     col = "steelblue", border = "white")
+par(old_par)
+```
+
+```{r}
+#| label: tbl-enrollment-groups
+#| tbl-cap: "Actual enrollment by phase and lead-sponsor type (unadjusted)."
+by_group <- split(y, groups)
+group_summary <- data.frame(
+  Group = names(by_group),
+  Trials = lengths(by_group),
+  Median = vapply(by_group, median, numeric(1)),
+  Mean = vapply(by_group, mean, numeric(1)),
+  row.names = NULL
+)
+knitr::kable(group_summary, digits = 1)
+```
+
+The unadjusted industry mean is higher in Phase 2 (146.1 versus 87.2) and lower in Phase 3 (695.4 versus 1,171.5). Industry medians are higher in both phases. That contrast makes it useful to distinguish a difference in means from a difference in typical trial size and to check how much the largest trials influence the result. These summaries do not adjust for start year or test the interaction.
