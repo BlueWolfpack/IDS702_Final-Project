@@ -1,4 +1,5 @@
-data/
+00-data/00-raw/
+00-data/10-raw_txt_only/
 __pycache__/
 .quarto/
 *_files/
