@@ -37,3 +37,34 @@ quarto render clinical-trials/ClinicalTrials_Proposal_Revised.qmd --to pdf
 ```
 
 Both the QMD and its CSV are included in the checkout. R reads the compressed CSV directly. No unzipping, Drive download, or path changes are needed. Use `--to html` instead if you don't need PDF or LaTeX.
+
+## Data
+
+**VARIABLES I NEED CONFIRMATION ON**
+
+- where is credit score?
+- where is origination year?
+- which ltv?
+- which dti?
+- which interest rate?
+- where is original loan amount?
+
+### performance_data_features.txt
+
+**Columns of importance**
+
+- "CURRENT LOAN DELINQUENCY STATUS" - - - `early_delinquency`
+- "ESTIMATED LOAN-TO-VALUE (ELTV)"- - - - `eltv`
+
+
+### origination_data_features.txt
+
+**Columns of importance**
+
+- "ORIGINAL LOAN-TO-VALUE (LTV)"- - - - - `ltv`
+- "ORIGINAL COMBINED LOAN-TO-VALUE (CLTV)" `cltv`
+- "ORIGINAL DEBT-TO-INCOME (DTI) RATIO" - `dti`
+- "LOAN PURPOSE" - - - - - - - - - - - - - - `loan_purpose` 
+- "OCCUPANCY STATUS" - - - - - - - - - - - `occupancy_status`
+- "ORIGINAL INTEREST RATE" - - - - - - - - `interest_rate`
+- "PROPERTY TYPE" - - - - - - - - - - - - - `property_type`
