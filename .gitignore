@@ -1,5 +1,6 @@
 00-data/00-raw/
 00-data/10-raw_txt_only/
+00-data/20-to_parquet/
 __pycache__/
 .quarto/
 *_files/
